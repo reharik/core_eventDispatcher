@@ -19,8 +19,8 @@
     "rx": "^2.5.3",
     "uuid": "^2.0.1",
     "extend": "^3.0.0",
-    "yowlWrapper": "git+https://github.com/reharik/core_yowlWrapper.git",
-    "eventModels": "git+https://github.com/reharik/core_eventModels.git"
+    "yowlWrapper": "git+git@github.com/reharik/core_yowlWrapper.git",
+    "eventModels": "git+https://git@github.com/reharik/core_eventModels.git"
   },
   "devDependencies": {
     "babel": "^5.5.6",
@@ -36,5 +36,13 @@
     "test": "tests"
   },
   "author": "Raif Harik",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reharik/core_eventDispatcher.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reharik/core_eventDispatcher/issues"
+  },
+  "homepage": "https://github.com/reharik/core_eventDispatcher#readme",
   "description": ""
 }
