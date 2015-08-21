@@ -3,11 +3,10 @@
 // */
 //
 var demand = require('must');
-var _ = require('lodash');
+var TestHandler = require('./mocks/TestEventHandler');
 
 describe('gesEventHandlerBase', function() {
     var mut;
-    var TestHandler;
     var GesEvent;
     var uuid;
     var expectIdempotence;
@@ -15,17 +14,6 @@ describe('gesEventHandlerBase', function() {
     var JSON;
 
     before(function(){
-        container = require('../testBootstrap');
-        var gesConnection = container.getInstanceOf('gesConnection');
-        if(_.isFunction(gesConnection.openConnection)) {
-            container.inject({name: 'gesConnection', resolvedInstance: gesConnection.openConnection()});
-            gesConnection = container.getInstanceOf('gesConnection');
-        }
-        TestHandler = container.getInstanceOf('TestEventHandler');
-        GesEvent = container.getInstanceOf('GesEvent');
-        uuid = container.getInstanceOf('uuid');
-        expectIdempotence = require('./mocks/expectIdempotenceMock')();
-        JSON = container.getInstanceOf('JSON');
         mut = new TestHandler();
     });
     beforeEach(function(){

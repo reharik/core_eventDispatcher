@@ -5,7 +5,8 @@
 var _eventDispatcher = require('./eventDispatcher');
 var _bufferToJson = require('./bufferToJson');
 var extend = require('extend');
-var yowlWrapper = require('yowlWrapper');
+var yowlWrapper = require('yowlwrapper');
+var invariant = require('invariant');
 
 module.exports = function index(handlers, eventStore, _options) {
     var options = {

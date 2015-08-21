@@ -3,58 +3,42 @@
  */
 
 require('must');
-var _ = require('lodash');
+var _eventStore = require('eventstore');
+var _eventHandlerBase = require('eventhandlerbase');
+var _readStoreRepository = require('readstorerepository');
+var uuid = require('uuid');
+var TestAgg = require('./mocks/testAgg');
+var eventModels = require('eventmodels')();
+var JSON = require('JSON');
+var index = require('../../src/index');
+var TestHandler = require('./mocks/TestEventHandler');
+
+var eventStore;
+var mod;
+var mut;
+var testHandler;
+var eventHandlerBase;
+var readStoreRepository;
 
 describe('gesDispatcher', function() {
-    var container;
-    var GesEvent;
-    var gesConnection;
-    var mod;
-    var mut;
-    var TestHandler;
-    var testHandler;
-    var JSON;
 
-    before(function(){
-        container = require('../testBootstrap');
-        console.log(container);
-        GesEvent = container.getInstanceOf('GesEvent');
-        gesConnection = container.getInstanceOf('gesConnection');
-        if(_.isFunction(gesConnection.openConnection)) {
-            container.inject({name: 'gesConnection', resolvedInstance: gesConnection.openConnection()});
-            gesConnection = container.getInstanceOf('gesConnection');
-        }
-        mod = container.getInstanceOf('gesDispatcher');
-        TestHandler = container.getInstanceOf('TestEventHandler');
-        testHandler = new TestHandler();
-        JSON = container.getInstanceOf('JSON');
-        mut = new mod({handlers:[testHandler]});
-
-    });
-    beforeEach(function(){
-       testHandler.clearEventsHandled();
-        gesConnection.clean();
+    before(function() {
+        eventStore = _eventStore({unitTest: true});
+        readStoreRepository = _readStoreRepository({unitTest: true});
+        eventHandlerBase = _eventHandlerBase(eventStore,readStoreRepository);
+        var _testHandler = TestHandler(eventHandlerBase);
+        testHandler = new _testHandler();
+        mut = index([testHandler], eventStore);
     });
 
+    beforeEach(function() {
+        testHandler.clearEventsHandled();
+    });
 
     describe('#Instanciate Dispatcher', function() {
         context('when instanciating dispatcher with no handlers', function () {
             it('should throw proper error',  function () {
-                (function(){new mod()}).must.throw(Error,"Invariant Violation: Dispatcher requires at least one handler");
-            })
-        });
-        context('when instanciating dispatcher with custom options', function () {
-            it('should have overwrite defaults',  function () {
-                var opts = {
-                    stream: 'someEventStream',
-                    targetTypeName: 'CommandTypeName',
-                    eventTypeName: 'command',
-                    handlers:[new TestHandler() ]
-                };
-                var littleD = new mod(opts);
-                littleD.options.stream.must.equal(opts.stream);
-                littleD.options.targetTypeName.must.equal(opts.targetTypeName);
-                littleD.options.eventTypeName.must.equal(opts.eventTypeName);
+                (function(){index()}).must.throw(Error,"Invariant Violation: Dispatcher requires at least one handler");
             })
         });
     });
@@ -62,18 +46,15 @@ describe('gesDispatcher', function() {
         context('when calling StartDispatching', function () {
             it('should handle event',  function () {
                 mut.startDispatching();
-
-                var subscription = gesConnection.getSubscription();
                 var eventData = {
-                    Event:{EventType:'someEventNotificationOn'},
+                    Event:{EventType:'event'},
                     OriginalPosition:{},
                     OriginalEvent:{
-                        Metadata:{eventTypeName:'eventTypeName'},
+                        Metadata:{eventName:'someEventNotificationOn', streamType: 'event'},
                         Data:{'some':'data'}
                     }
-
                 };
-                subscription.emit('event', eventData);
+                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
                 testHandler.eventsHandled.length.must.equal(1);
             });
 

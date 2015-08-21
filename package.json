@@ -15,17 +15,20 @@
   "dependencies": {
     "JSON": "^1.0.0",
     "bluebird": "^2.9.27",
+    "eventmodels": "git+https://git@github.com/reharik/core_eventModels.git",
+    "extend": "^3.0.0",
     "invariant": "^2.1.0",
+    "is-object-empty": "^1.0.0",
     "rx": "^2.5.3",
     "uuid": "^2.0.1",
-    "extend": "^3.0.0",
-    "yowlWrapper": "git+git@github.com/reharik/core_yowlWrapper.git",
-    "eventModels": "git+https://git@github.com/reharik/core_eventModels.git"
+    "eventhandlerbase": "git+https://github.com/reharik/core_eventHandlerBase.git",
+    "yowlwrapper": "git+https://github.com/reharik/core_yowlWrapper.git"
   },
   "devDependencies": {
+    "eventstore": "git+https://github.com/reharik/core_eventStore.git",
+    "readstorerepository": "git+https://github.com/reharik/core_readStoreRepository.git",
     "babel": "^5.5.6",
     "babel-runtime": "^5.5.6",
-    "babelify": "^5.0.4",
     "del": "^1.2.0",
     "gulp": "^3.9.0",
     "mocha": "^2.2.5",
