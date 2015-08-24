@@ -5,7 +5,7 @@
 require('must');
 var _eventStore = require('eventstore');
 var _eventHandlerBase = require('eventhandlerbase');
-var _readStoreRepository = require('readstorerepository');
+var _readStoreRepository = require('readstorerepository')({unitTest: true});
 var uuid = require('uuid');
 var TestAgg = require('./mocks/testAgg');
 var eventModels = require('eventmodels')();
@@ -24,7 +24,7 @@ describe('gesDispatcher', function() {
 
     before(function() {
         eventStore = _eventStore({unitTest: true});
-        readStoreRepository = _readStoreRepository({unitTest: true});
+        readStoreRepository = _readStoreRepository;
         eventHandlerBase = _eventHandlerBase(eventStore,readStoreRepository);
         var _testHandler = TestHandler(eventHandlerBase);
         testHandler = new _testHandler();

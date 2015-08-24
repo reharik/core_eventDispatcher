@@ -1,4 +1,4 @@
 require("babel/register")({
-    stage: 1,
+    stage: 0,
     ignore:['uuid.js','rx.js']
 });
