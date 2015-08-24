@@ -6,8 +6,6 @@ require('must');
 var _eventStore = require('eventstore');
 var _eventHandlerBase = require('eventhandlerbase');
 var _readStoreRepository = require('readstorerepository')({unitTest: true});
-var uuid = require('uuid');
-var TestAgg = require('./mocks/testAgg');
 var eventModels = require('eventmodels')();
 var JSON = require('JSON');
 var index = require('../../src/index');
@@ -63,60 +61,62 @@ describe('gesDispatcher', function() {
 
             it('should should emit the proper type',  function () {
                 mut.startDispatching();
-                var subscription = gesConnection.getSubscription();
                 var eventData = {
-                    Event:{EventType:'someEventNotificationOn'},
+                    Event:{EventType:'event'},
                     OriginalPosition:'the originalPosition',
                     OriginalEvent:{
-                        Metadata:{eventTypeName:'someEventNotificationOn'},
+                        Metadata:{eventName:'someEventNotificationOn', streamType:'event'},
                         Data:{'some':'data'}
                     }
 
                 };
-                subscription.emit('event', eventData);
-                testHandler.eventsHandled[0].must.be.instanceof(GesEvent) ;
+                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
+                setTimeout(function(){
+                    testHandler.eventsHandled[0].must.be.instanceof(eventModels.gesEvent);
+                }, 200);
             });
 
             it('should all the expected values on it',  function () {
                 mut.startDispatching();
-                var subscription = gesConnection.getSubscription();
                 var eventData = {
-                    Event:{EventType:'someEventNotificationOn'},
+                    Event:{EventType:'event'},
                     OriginalPosition:'the originalPosition',
                     OriginalEvent:{
-                        Metadata:{eventTypeName:'someEventNotificationOn'},
+                        Metadata:{eventName:'someEventNotificationOn', streamType: 'event'},
                         Data:{'some':'data'}
                     }
-
                 };
-                subscription.emit('event', eventData);
-                var eventsHandled = testHandler.eventsHandled[0];
-                eventsHandled.eventTypeName.must.equal('someEventNotificationOn');
-                eventsHandled.originalPosition.must.equal('the originalPosition');
-                eventsHandled.metadata.eventTypeName.must.equal('someEventNotificationOn');
-                eventsHandled.data.some.must.equal('data');
+                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
+                setTimeout(function(){
+                    var eventsHandled = testHandler.eventsHandled[0];
+                    eventsHandled.eventTypeName.must.equal('someEventNotificationOn');
+                    eventsHandled.originalPosition.must.equal('the originalPosition');
+                    eventsHandled.metadata.eventTypeName.must.equal('someEventNotificationOn');
+                    eventsHandled.data.some.must.equal('data');
+                }, 200);
+
             })
         });
 
         context('when calling StartDispatching with filter breaking vars', function () {
             it('should not post event to handler for system event',  function () {
                 mut.startDispatching();
-                var subscription = gesConnection.getSubscription();
                 var eventData = {
                     Event:{EventType:'$testEvent'},
                     OriginalPosition:{},
                     OriginalEvent:{
-                        Metadata:{eventTypeName:'someEventNotificationOn'},
+                        Metadata:{eventName:'someEventNotificationOn', streamType: 'event'},
                         Data:{'some':'data'}
                     }
 
                 };
-                subscription.emit('event', eventData);
-                testHandler.eventsHandled.length.must.equal(0);
+                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
+                setTimeout(function(){
+                    testHandler.eventsHandled.length.must.equal(0);
+                }, 200);
             });
             it('should not post event to handler for empty metadata',  function () {
                 mut.startDispatching();
-                var subscription = gesConnection.subscribeToStream();
                 var eventData = {
                     Event:{EventType:'testEvent'},
                     OriginalPosition:{},
@@ -126,35 +126,39 @@ describe('gesDispatcher', function() {
                     }
 
                 };
-                subscription.emit('event', eventData);
-                testHandler.eventsHandled.length.must.equal(0);
+                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
+                setTimeout(function(){
+                    testHandler.eventsHandled.length.must.equal(0);
+                }, 200);
             });
             it('should not post event to handler for empty data',  function () {
                 mut.startDispatching();
-                var subscription = gesConnection.subscribeToStream();
                 var eventData = {
                     Event:{EventType:'testEvent'},
                     OriginalPosition:{},
                     OriginalEvent:{
-                        Metadata:{eventTypeName:'someEventNotificationOn'},
+                        Metadata:{eventName:'someEventNotificationOn', streamType: 'event'},
                         Data:{}
                     }
 
                 };
-                subscription.emit('event', eventData);
-                testHandler.eventsHandled.length.must.equal(0);
+                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
+                setTimeout(function(){
+                    testHandler.eventsHandled.length.must.equal(0);
+                }, 200);
             });
 
             it('should not break when empty metadata or data',  function () {
                 mut.startDispatching();
-                var subscription = gesConnection.subscribeToStream();
                 var eventData = {
                     Event:{Type:'testEvent'},
                     OriginalPosition:{},
                     OriginalEvent:{}
                 };
-                subscription.emit('event', eventData);
-                testHandler.eventsHandled.length.must.equal(0);
+                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
+                setTimeout(function(){
+                    testHandler.eventsHandled.length.must.equal(0);
+                }, 200);
             });
         });
 
