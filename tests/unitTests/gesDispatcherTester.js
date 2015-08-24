@@ -55,7 +55,10 @@ describe('gesDispatcher', function() {
                     }
                 };
                 eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
-                testHandler.eventsHandled.length.must.equal(1);
+                setTimeout(function(){
+                    testHandler.eventsHandled.length.must.equal(1);
+                }, 200);
+
             });
 
             it('should should emit the proper type',  function () {

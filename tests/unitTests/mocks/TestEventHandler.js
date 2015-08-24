@@ -2,7 +2,7 @@
  * Created by rharik on 6/19/15.
  */
 
-
+var Promise = require('bluebird');
 module.exports = function(eventHandlerBase) {
     return class TestEventHandler extends eventHandlerBase {
         constructor() {
@@ -18,9 +18,9 @@ module.exports = function(eventHandlerBase) {
         }
 
         someEventNotificationOn(vnt) {
-           console.log('here');
-            this.createNotification(vnt);
             this.eventsHandled.push(vnt);
+            console.log('here');
+            console.log(this.eventsHandled);
         }
 
         someEventNotificationOff(vnt) {
@@ -28,7 +28,6 @@ module.exports = function(eventHandlerBase) {
         }
 
         someExceptionNotificationOn(vnt) {
-            this.createNotification(vnt);
             throw(new Error());
         }
         someExceptionNotificationOff(vnt) {
@@ -37,7 +36,6 @@ module.exports = function(eventHandlerBase) {
 
         testingEventNotificationOn(vnt){
             console.log("here");
-            this.createNotification(vnt);
             this.eventsHandled.push(vnt);
         }
 

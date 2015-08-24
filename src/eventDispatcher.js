@@ -78,7 +78,7 @@ module.exports = function(_handlers, _eventStore, _bufferToJson, _logger, _optio
         console.log('payload');
         console.log(payload);
         logger.debug('createGesEvent | event passed through filter');
-        var vent = eventModels.GesEvent.init(bufferToJson(payload.OriginalEvent.Metadata).eventName,
+        var vent = eventModels.gesEvent.init(bufferToJson(payload.OriginalEvent.Metadata).eventName,
             payload.OriginalEvent.Data,
             payload.OriginalEvent.Metadata,
             payload.OriginalPosition
