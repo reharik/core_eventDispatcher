@@ -9,17 +9,20 @@ var eventModels = require('eventmodels')();
 var JSON = require('JSON');
 var rx = require('rx');
 
-module.exports = function(_handlers, _eventStore, _bufferToJson, _logger, _options) {
+var eventDispatcher = function eventDispatcher(_handlers, _eventStore, _bufferToJson, _logger, _options) {
     var logger = _logger;
     var handlers = _handlers;
-    var bufferToJson =_bufferToJson;
+    var bufferToJson = _bufferToJson;
     var eventStore = _eventStore;
+
     logger.trace('constructor | constructing gesDispatcher base version');
     logger.debug('constructor | gesDispatcher base options passed in ' + _options);
 
     var options = {
-        stream: '$all',
+        stream          : '$all',
+
         // e.g. event, command, notification
+
         targetStreamType: 'event'
     };
     extend(options, _options);
@@ -109,3 +112,5 @@ module.exports = function(_handlers, _eventStore, _bufferToJson, _logger, _optio
         startDispatching:startDispatching
     };
 };
+
+module.exports = eventDispatcher;

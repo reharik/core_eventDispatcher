@@ -3,12 +3,13 @@
  */
 
 require('must');
+var index = require('../../src/index');
+var corelogger = require('corelogger');
 var _eventStore = require('eventstore');
 var _eventHandlerBase = require('eventhandlerbase');
 var _readStoreRepository = require('readstorerepository')({unitTest: true});
 var eventModels = require('eventmodels')();
 var JSON = require('JSON');
-var index = require('../../src/index');
 var TestHandler = require('./mocks/TestEventHandler');
 
 var eventStore;
@@ -17,6 +18,10 @@ var mut;
 var testHandler;
 var eventHandlerBase;
 var readStoreRepository;
+corelogger.error('TEST');
+corelogger.error('TEST');
+corelogger.error('TEST');
+corelogger.error('TEST');
 
 describe('gesDispatcher', function() {
 

@@ -6,3 +6,4 @@ plugin:
  environment:
   DEBUG: true
   NODE_ENV: development
+  APPLICATION_NAME: EventDispatcher
