@@ -1,25 +1,18 @@
 {
   "name": "eventdispatcher",
   "version": "0.0.1",
-  "private": false,
-  "description": "core_eventDispatcher",
-  "homepage": "https://github.com/reharik/core_eventDispatcher#readme",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha --require ./babelhook --opts ./tests/mocha.opts ./tests/unitTests/*.js"
+    "start": "babel-node --harmony src/index.js --stage 0",
+    "test": "mocha --opts tests/mocha.opts tests/unitTests",
+    "testSpecific": "mocha --opts tests/mocha.opts ",
+    "testDebug": "node-debug _mocha --timeout 15000 --opts tests/mocha.opts unitTests",
+    "intTest": "mocha --opts integrationTests/mocha.opts --opts tests/mocha.opts",
+    "intTestSpecific": "mocha --opts tests/mocha.opts "
   },
-  "bugs": {
-    "url": "https://github.com/reharik/core_eventDispatcher/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/reharik/core_eventDispatcher.git"
-  },
-  "keywords": [
-  ],
-  "author": "Raif Harik",
   "license": "MIT",
-   "dependencies": {
+  "node": ">=0.12.0",
+  "dependencies": {
     "JSON": "^1.0.0",
     "bluebird": "^2.9.27",
     "eventmodels": "git+https://git@github.com/reharik/core_eventModels.git",
@@ -40,6 +33,19 @@
     "gulp": "^3.9.0",
     "mocha": "^2.2.5",
     "mochawait": "^2.0.1",
-    "must": "^0.13.0-beta2"
-  }
+    "must": "^0.12.0"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "author": "Raif Harik",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reharik/core_eventDispatcher.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reharik/core_eventDispatcher/issues"
+  },
+  "homepage": "https://github.com/reharik/core_eventDispatcher#readme",
+  "description": ""
 }
