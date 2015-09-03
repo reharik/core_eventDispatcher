@@ -1,6 +1,8 @@
 /**
  * Created by rharik on 7/7/15.
  */
+var logger = require('corelogger');
+
 
 module.exports = function(logger) {
     return function bufferToJson(item) {

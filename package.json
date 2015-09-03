@@ -29,7 +29,7 @@
     "rx": "^2.5.3",
     "uuid": "^2.0.1",
     "eventhandlerbase": "git+https://github.com/reharik/core_eventHandlerBase.git",
-    "yowlwrapper": "git+https://github.com/reharik/core_yowlWrapper.git"
+    "corelogger": "git+https://github.com/reharik/core_logger.git"
   },
   "devDependencies": {
     "eventstore": "git+https://github.com/reharik/core_eventStore.git",

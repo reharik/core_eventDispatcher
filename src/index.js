@@ -3,9 +3,8 @@
  */
 
 var _eventDispatcher = require('./eventDispatcher');
-var _bufferToJson = require('./bufferToJson');
 var extend = require('extend');
-var yowlWrapper = require('yowlwrapper');
+var corelogger = require('corelogger');
 var invariant = require('invariant');
 
 module.exports = function index(handlers, eventStore, _options) {
@@ -19,7 +18,6 @@ module.exports = function index(handlers, eventStore, _options) {
 
     invariant(handlers, "Dispatcher requires at least one handler");
 
-    var logger = yowlWrapper(options.logger);
-    var bufferToJson = _bufferToJson(logger);
-    return _eventDispatcher(handlers, eventStore, bufferToJson, logger, options);
+    corelogger.changeOptions({moduleName: "EventDispatcher"});
+    return _eventDispatcher(handlers, options);
 };
