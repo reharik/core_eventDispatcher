@@ -2,36 +2,30 @@
  * Created by rharik on 6/19/15.
  */
 
-require('must');
-var index = require('../../src/index');
-var corelogger = require('corelogger');
-var _eventStore = require('eventstore');
-var _eventHandlerBase = require('eventhandlerbase');
-var _readStoreRepository = require('readstorerepository')({unitTest: true});
-var eventModels = require('eventmodels')();
-var JSON = require('JSON');
-var TestHandler = require('./mocks/TestEventHandler');
-
+var should = require('chai').should();
+var expect = require('chai').expect;
 var eventStore;
-var mod;
+var eventModels;
+var _mut;
 var mut;
 var testHandler;
-var eventHandlerBase;
-var readStoreRepository;
-corelogger.error('TEST');
-corelogger.error('TEST');
-corelogger.error('TEST');
-corelogger.error('TEST');
+var options = {
+    logger: {
+        moduleName: 'EventDispatcher',
+        level:'error'
+    }
+};
 
 describe('gesDispatcher', function() {
 
+    var container = require('../../registry_test')(options);
     before(function() {
-        eventStore = _eventStore({unitTest: true});
-        readStoreRepository = _readStoreRepository;
-        eventHandlerBase = _eventHandlerBase(eventStore,readStoreRepository);
-        var _testHandler = TestHandler(eventHandlerBase);
-        testHandler = new _testHandler();
-        mut = index([testHandler], eventStore);
+        var TestHandler = container.getInstanceOf('TestEventHandler');
+        eventStore      = container.getInstanceOf('eventstore');
+        eventModels     = container.getInstanceOf('eventmodels');
+        _mut            = container.getInstanceOf('eventDispatcher');
+        testHandler     = new TestHandler();
+        mut             = _mut([testHandler]);
     });
 
     beforeEach(function() {
@@ -39,135 +33,142 @@ describe('gesDispatcher', function() {
     });
 
     describe('#Instanciate Dispatcher', function() {
-        context('when instanciating dispatcher with no handlers', function () {
-            it('should throw proper error',  function () {
-                (function(){index()}).must.throw(Error,"Invariant Violation: Dispatcher requires at least one handler");
+        context('when instanciating dispatcher with no handlers', function() {
+            it('should throw proper error', function() {
+                var errorMsg;
+                try {
+                    _mut()
+                }catch(ex){
+                    errorMsg = ex.message;
+                }
+                errorMsg.should.equal("Invariant Violation: Dispatcher requires at least one handler");
             })
         });
     });
     describe('#StartDispatching', function() {
-        context('when calling StartDispatching', function () {
-            it('should handle event',  function () {
+        context('when calling StartDispatching', function() {
+            it('should handle event', async function() {
                 mut.startDispatching();
                 var eventData = {
-                    Event:{EventType:'event'},
-                    OriginalPosition:{},
-                    OriginalEvent:{
-                        Metadata:{eventName:'someEventNotificationOn', streamType: 'event'},
-                        Data:{'some':'data'}
+                    Event           : {EventType: 'event'},
+                    OriginalPosition: {},
+                    OriginalEvent   : {
+                        Metadata: {
+                            eventName : 'someEventNotificationOn',
+                            streamType: 'event'
+                        },
+                        Data    : {'some': 'data'}
                     }
                 };
-                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
-                setTimeout(function(){
-                    testHandler.eventsHandled.length.must.equal(1);
-                }, 200);
-
+                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {
+                });
+                testHandler.getHandledEvents().length.should.equal(1);
             });
 
-            it('should should emit the proper type',  function () {
+            it('should emit the proper type', async function() {
                 mut.startDispatching();
                 var eventData = {
-                    Event:{EventType:'event'},
-                    OriginalPosition:'the originalPosition',
-                    OriginalEvent:{
-                        Metadata:{eventName:'someEventNotificationOn', streamType:'event'},
-                        Data:{'some':'data'}
+                    Event           : {EventType: 'event'},
+                    OriginalPosition: 'the originalPosition',
+                    OriginalEvent   : {
+                        Metadata: {
+                            eventName : 'someEventNotificationOn',
+                            streamType: 'event'
+                        },
+                        Data    : {'some': 'data'}
                     }
 
                 };
-                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
-                setTimeout(function(){
-                    testHandler.eventsHandled[0].must.be.instanceof(eventModels.gesEvent);
-                }, 200);
+                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
+                testHandler.eventsHandled[0].should.have.property('eventName');
             });
 
-            it('should all the expected values on it',  function () {
+            it('should all the expected values on it', async function() {
                 mut.startDispatching();
-                var eventData = {
-                    Event:{EventType:'event'},
-                    OriginalPosition:'the originalPosition',
-                    OriginalEvent:{
-                        Metadata:{eventName:'someEventNotificationOn', streamType: 'event'},
-                        Data:{'some':'data'}
+                var eventData     = {
+                    Event           : {EventType: 'event'},
+                    OriginalPosition: 'the originalPosition',
+                    OriginalEvent   : {
+                        Metadata: {
+                            eventName : 'someEventNotificationOn',
+                            streamType: 'event'
+                        },
+                        Data    : {'some': 'data'}
                     }
                 };
-                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
-                setTimeout(function(){
-                    var eventsHandled = testHandler.eventsHandled[0];
-                    eventsHandled.eventTypeName.must.equal('someEventNotificationOn');
-                    eventsHandled.originalPosition.must.equal('the originalPosition');
-                    eventsHandled.metadata.eventTypeName.must.equal('someEventNotificationOn');
-                    eventsHandled.data.some.must.equal('data');
-                }, 200);
-
+                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
+                var eventsHandled = testHandler.eventsHandled[0];
+                eventsHandled.eventName.should.equal('someEventNotificationOn');
+                eventsHandled.originalPosition.should.equal('the originalPosition');
+                eventsHandled.metadata.eventName.should.equal('someEventNotificationOn');
+                eventsHandled.data.some.should.equal('data');
             })
         });
 
-        context('when calling StartDispatching with filter breaking vars', function () {
-            it('should not post event to handler for system event',  function () {
+        context('when calling StartDispatching with filter breaking vars', function() {
+            it('should not post event to handler for system event', async function() {
                 mut.startDispatching();
                 var eventData = {
-                    Event:{EventType:'$testEvent'},
-                    OriginalPosition:{},
-                    OriginalEvent:{
-                        Metadata:{eventName:'someEventNotificationOn', streamType: 'event'},
-                        Data:{'some':'data'}
+                    Event           : {EventType: '$testEvent'},
+                    OriginalPosition: {},
+                    OriginalEvent   : {
+                        Metadata: {
+                            eventName : 'someEventNotificationOn',
+                            streamType: 'event'
+                        },
+                        Data    : {'some': 'data'}
                     }
 
                 };
-                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
-                setTimeout(function(){
-                    testHandler.eventsHandled.length.must.equal(0);
-                }, 200);
+                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {
+                });
+                testHandler.eventsHandled.length.should.equal(0);
             });
-            it('should not post event to handler for empty metadata',  function () {
+            it('should not post event to handler for empty metadata', async function() {
                 mut.startDispatching();
                 var eventData = {
-                    Event:{EventType:'testEvent'},
-                    OriginalPosition:{},
-                    OriginalEvent:{
-                        Metadata:{},
-                        Data:{'some':'data'}
+                    Event           : {EventType: 'testEvent'},
+                    OriginalPosition: {},
+                    OriginalEvent   : {
+                        Metadata: {},
+                        Data    : {'some': 'data'}
                     }
 
                 };
-                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
-                setTimeout(function(){
-                    testHandler.eventsHandled.length.must.equal(0);
-                }, 200);
+                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
+                testHandler.eventsHandled.length.should.equal(0);
             });
-            it('should not post event to handler for empty data',  function () {
+            it('should not post event to handler for empty data', async function() {
                 mut.startDispatching();
                 var eventData = {
-                    Event:{EventType:'testEvent'},
-                    OriginalPosition:{},
-                    OriginalEvent:{
-                        Metadata:{eventName:'someEventNotificationOn', streamType: 'event'},
-                        Data:{}
+                    Event           : {EventType: 'testEvent'},
+                    OriginalPosition: {},
+                    OriginalEvent   : {
+                        Metadata: {
+                            eventName : 'someEventNotificationOn',
+                            streamType: 'event'
+                        },
+                        Data    : {}
                     }
 
                 };
-                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
-                setTimeout(function(){
-                    testHandler.eventsHandled.length.must.equal(0);
-                }, 200);
+                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
+                testHandler.eventsHandled.length.should.equal(0);
             });
 
-            it('should not break when empty metadata or data',  function () {
+            it('should not break when empty metadata or data', async function() {
                 mut.startDispatching();
                 var eventData = {
-                    Event:{Type:'testEvent'},
-                    OriginalPosition:{},
-                    OriginalEvent:{}
+                    Event           : {Type: 'testEvent'},
+                    OriginalPosition: {},
+                    OriginalEvent   : {}
                 };
-                eventStore.gesConnection.appendToStream('someEventNotificationOn', eventData, ()=>{});
-                setTimeout(function(){
-                    testHandler.eventsHandled.length.must.equal(0);
-                }, 200);
+                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
+                testHandler.eventsHandled.length.should.equal(0);
             });
+
         });
-
     });
-
-
 });
+
+

@@ -4,7 +4,7 @@
   "private": false,
   "description": "core_eventDispatcher",
   "homepage": "https://github.com/reharik/core_eventDispatcher#readme",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "mocha --require ./babelhook --opts ./tests/mocha.opts ./tests/unitTests/*.js"
   },
@@ -15,31 +15,31 @@
     "type": "git",
     "url": "git+https://github.com/reharik/core_eventDispatcher.git"
   },
-  "keywords": [
-  ],
+  "keywords": [],
   "author": "Raif Harik",
   "license": "MIT",
   "dependencies": {
     "JSON": "^1.0.0",
     "bluebird": "^2.9.27",
+    "buffer": "^3.4.3",
+    "corelogger": "git+https://github.com/reharik/core_logger.git",
+    "dagon": "^0.1.2",
+    "eventhandlerbase": "git+https://github.com/reharik/core_eventHandlerBase.git",
     "eventmodels": "git+https://git@github.com/reharik/core_eventModels.git",
     "extend": "^3.0.0",
     "invariant": "^2.1.0",
     "is-object-empty": "^1.0.0",
     "rx": "^2.5.3",
-    "uuid": "^2.0.1",
-    "eventhandlerbase": "git+https://github.com/reharik/core_eventHandlerBase.git",
-    "corelogger": "git+https://github.com/reharik/core_logger.git"
+    "eventstore": "git+https://github.com/reharik/core_eventStore.git",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
-    "eventstore": "git+https://github.com/reharik/core_eventStore.git",
-    "readstorerepository": "git+https://github.com/reharik/core_readStoreRepository.git",
-    "babel": "^5.5.6",
-    "babel-runtime": "^5.5.6",
+    "babel": "^5.8.23",
+    "chai": "^3.2.0",
     "del": "^1.2.0",
     "gulp": "^3.9.0",
     "mocha": "^2.2.5",
     "mochawait": "^2.0.1",
-    "must": "^0.13.0-beta2"
+    "readstorerepository": "git+https://github.com/reharik/core_readStoreRepository.git"
   }
 }
