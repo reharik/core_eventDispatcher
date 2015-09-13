@@ -23,7 +23,7 @@
     "bluebird": "^2.9.27",
     "buffer": "^3.4.3",
     "corelogger": "git+https://github.com/reharik/core_logger.git",
-    "dagon": "^0.1.2",
+    "dagon": "git+https://github.com/reharik/dagon.git#functional",
     "eventhandlerbase": "git+https://github.com/reharik/core_eventHandlerBase.git",
     "eventmodels": "git+https://git@github.com/reharik/core_eventModels.git",
     "extend": "^3.0.0",
