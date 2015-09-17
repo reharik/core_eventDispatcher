@@ -14,8 +14,6 @@ module.exports = function(handlers, _options) {
     };
     extend(options, _options || {});
     var container = registry(options);
-    console.log(container);
-    console.log(container.whatDoIHave());
     var plugin = container.getInstanceOf('eventDispatcher');
 
     return plugin(handlers, options);
