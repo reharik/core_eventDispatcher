@@ -30,7 +30,12 @@ var eventDispatcher = function eventDispatcher(eventstore,
             logger.info('startDispatching | startDispatching called');
 
             var subscription = eventstore.subscribeToAllFrom();
-console.log(eventstore.gesConnection);
+
+            subscription.on('event', function(evt) {
+                // ta da!
+                console.log(evt)
+            })
+
             //Dispatcher gets raw events from ges in the EventData Form
             logger.debug('constructor | observable created');
             var relevantEvents = rx.Observable.fromEvent(subscription, 'event')
