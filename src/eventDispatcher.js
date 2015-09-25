@@ -11,9 +11,8 @@ var eventDispatcher = function eventDispatcher(eventstore,
                                                isobjectempty,
                                                eventmodels,
                                                JSON) {
-    return function(handlers, _options) {
-        invariant(handlers, 'Dispatcher requires at least one handler');
-
+    return function(_options) {
+        var handlers;
         logger.trace('constructor | constructing gesDispatcher base version');
         logger.debug('constructor | gesDispatcher base options passed in ' + _options);
 
@@ -25,11 +24,13 @@ var eventDispatcher = function eventDispatcher(eventstore,
         extend(options, _options);
         logger.debug('constructor | gesDispatcher base options after merge ' + JSON.stringify(options, null, 4));
 
-        var startDispatching = function() {
-            logger.info('constructor | startDispatching called');
+        var startDispatching = function(_handlers) {
+            handlers = _handlers;
+            invariant(handlers, 'Dispatcher requires at least one handler');
+            logger.info('startDispatching| startDispatching called');
 
             var subscription = eventstore.subscribeToAllFrom();
-
+console.log(subscription);
             //Dispatcher gets raw events from ges in the EventData Form
             logger.debug('constructor | observable created');
             var relevantEvents = rx.Observable.fromEvent(subscription, 'event')
@@ -43,7 +44,8 @@ var eventDispatcher = function eventDispatcher(eventstore,
         };
 
         var filterEvents = function(payload) {
-            //logger.info('event received by dispatcher');
+            logger.info('event received by dispatcher');
+            logger.info(payload);
             //logger.trace('filtering event for system events ($)');
             if (!payload.Event || !payload.Event.EventType || payload.Event.EventType.startsWith('$')) {
                 return false;

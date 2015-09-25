@@ -5,7 +5,7 @@
 var extend = require('extend');
 var registry = require('./registry');
 
-module.exports = function(handlers, _options) {
+module.exports = function(_options) {
     var options = {
         logger: {
             moduleName: 'EventDispatcher'
@@ -15,5 +15,5 @@ module.exports = function(handlers, _options) {
     var container = registry(options);
     var plugin = container.getInstanceOf('eventDispatcher');
 
-    return plugin(handlers, options);
+    return plugin(options);
 };
