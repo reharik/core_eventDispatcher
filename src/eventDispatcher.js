@@ -82,7 +82,8 @@ var eventDispatcher = function eventDispatcher(eventstore,
             console.log(payload.OriginalEvent)
             console.log(bufferToJson(payload.OriginalEvent.Metadata))
 try {
-
+    console.log('eventmodels.gesEvent')
+    console.log(eventmodels.gesEvent)
     var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
         payload.OriginalEvent.Data,
         payload.OriginalEvent.Metadata,
@@ -92,7 +93,7 @@ try {
 }catch(ex){
     console.log(ex);
     console.log(ex.stack);
-    
+
 }
             logger.info('createGesEvent | event transfered into gesEvent: ' + JSON.stringify(vent, null, 4));
             return vent;
