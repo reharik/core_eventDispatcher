@@ -31,11 +31,6 @@ var eventDispatcher = function eventDispatcher(eventstore,
 
             var subscription = eventstore.subscribeToAllFrom();
 
-            subscription.on('event', function(evt) {
-                // ta da!
-                console.log(evt)
-            })
-
             //Dispatcher gets raw events from ges in the EventData Form
             logger.debug('constructor | observable created');
             var relevantEvents = rx.Observable.fromEvent(subscription, 'event')
@@ -82,6 +77,9 @@ var eventDispatcher = function eventDispatcher(eventstore,
 
         var createGesEvent = function(payload) {
             logger.debug('createGesEvent | event passed through filter');
+            console.log('payload.OriginalEvent')
+            console.log(payload.OriginalEvent)
+            console.log(bufferToJson(payload.OriginalEvent.Metadata))
             var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
                 payload.OriginalEvent.Data,
                 payload.OriginalEvent.Metadata,
