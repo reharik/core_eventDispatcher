@@ -89,7 +89,7 @@ var eventDispatcher = function eventDispatcher(eventstore,
 
         var serveEventToHandlers = function(vent) {
             logger.info('serveEventToHandlers | looping through event handlers');
-console.log(handlers);
+console.log(handlers.mpa(x=> new x());
             handlers.mpa(x=> new x())
                 .filter(h=> {
                     logger.info('serveEventToHandlers | checking event handler :' + h.eventHandlerName + ' for eventName: ' + vent.eventName);
