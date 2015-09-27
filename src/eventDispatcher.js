@@ -81,11 +81,19 @@ var eventDispatcher = function eventDispatcher(eventstore,
             console.log('payload.OriginalEvent')
             console.log(payload.OriginalEvent)
             console.log(bufferToJson(payload.OriginalEvent.Metadata))
-            var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
-                payload.OriginalEvent.Data,
-                payload.OriginalEvent.Metadata,
-                payload.OriginalPosition
-            );
+try {
+
+    var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
+        payload.OriginalEvent.Data,
+        payload.OriginalEvent.Metadata,
+        payload.OriginalPosition
+    );
+
+}catch(ex){
+    console.log(ex);
+    console.log(ex.stack);
+    
+}
             logger.info('createGesEvent | event transfered into gesEvent: ' + JSON.stringify(vent, null, 4));
             return vent;
         };
