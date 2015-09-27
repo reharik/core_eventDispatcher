@@ -25,6 +25,10 @@ var eventDispatcher = function eventDispatcher(eventstore,
         logger.debug('constructor | gesDispatcher base options after merge ' + JSON.stringify(options, null, 4));
 
         var startDispatching = function(_handlers) {
+            console.log('11111payload.OriginalEvent')
+            console.log(eventmodels)
+            console.log(eventmodels.gesEvent)
+
             handlers = _handlers;
             invariant(handlers, 'Dispatcher requires at least one handler');
             logger.info('startDispatching | startDispatching called');
@@ -79,22 +83,13 @@ var eventDispatcher = function eventDispatcher(eventstore,
         var createGesEvent = function(payload) {
             logger.debug('createGesEvent | event passed through filter');
             console.log('payload.OriginalEvent')
-            console.log(payload.OriginalEvent)
-            console.log(bufferToJson(payload.OriginalEvent.Metadata))
-try {
-    console.log('eventmodels.gesEvent')
-    console.log(eventmodels.gesEvent)
-    var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
-        payload.OriginalEvent.Data,
-        payload.OriginalEvent.Metadata,
-        payload.OriginalPosition
-    );
-
-}catch(ex){
-    console.log(ex);
-    console.log(ex.stack);
-
-}
+            console.log(eventmodels)
+            console.log(eventmodels.gesEvent)
+            var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
+                payload.OriginalEvent.Data,
+                payload.OriginalEvent.Metadata,
+                payload.OriginalPosition
+            );
             logger.info('createGesEvent | event transfered into gesEvent: ' + JSON.stringify(vent, null, 4));
             return vent;
         };
