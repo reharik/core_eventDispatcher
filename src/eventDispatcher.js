@@ -28,7 +28,7 @@ var eventDispatcher = function eventDispatcher(eventstore,
             console.log('11111payload.OriginalEvent')
             console.log(eventmodels)
             console.log(eventmodels.gesEvent)
-
+var that = this;
             handlers = _handlers;
             invariant(handlers, 'Dispatcher requires at least one handler');
             logger.info('startDispatching | startDispatching called');
@@ -39,7 +39,7 @@ var eventDispatcher = function eventDispatcher(eventstore,
             logger.debug('constructor | observable created');
             var relevantEvents = rx.Observable.fromEvent(subscription, 'event')
                 .filter(filterEvents)
-                .map(createGesEvent, this);
+                .map(createGesEvent, that);
             relevantEvents.forEach(vent => serveEventToHandlers(vent),
                     error => {
                     throw error;
