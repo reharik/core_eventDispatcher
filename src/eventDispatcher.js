@@ -98,7 +98,7 @@ var eventDispatcher = function eventDispatcher(eventstore,
                     return h.handlesEvents.includes(vent.eventName);
                 })
                 .forEach(m=> {
-                    logger.debug('serveEventToHandlers | '+m.name+' event handler does handle event type: ' + vent.eventName);
+                    logger.debug('serveEventToHandlers | '+m.eventHandlerName+' event handler does handle event type: ' + vent.eventName);
                    console.log('for each')
                     console.log(m);
                     console.log(m.toString());
