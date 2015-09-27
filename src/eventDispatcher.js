@@ -25,10 +25,6 @@ var eventDispatcher = function eventDispatcher(eventstore,
         logger.debug('constructor | gesDispatcher base options after merge ' + JSON.stringify(options, null, 4));
 
         var startDispatching = function(_handlers) {
-            console.log('11111payload.OriginalEvent')
-            console.log(eventmodels)
-            console.log(eventmodels.gesEvent)
-var that = this;
             handlers = _handlers;
             invariant(handlers, 'Dispatcher requires at least one handler');
             logger.info('startDispatching | startDispatching called');
@@ -39,7 +35,7 @@ var that = this;
             logger.debug('constructor | observable created');
             var relevantEvents = rx.Observable.fromEvent(subscription, 'event')
                 .filter(filterEvents)
-                .map(createGesEvent, that);
+                .map(createGesEvent, this);
             relevantEvents.forEach(vent => serveEventToHandlers(vent),
                     error => {
                     throw error;
@@ -82,9 +78,6 @@ var that = this;
 
         var createGesEvent = function(payload) {
             logger.debug('createGesEvent | event passed through filter');
-            console.log('payload.OriginalEvent')
-            console.log(eventmodels)
-            console.log(eventmodels.gesEvent)
             var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
                 payload.OriginalEvent.Data,
                 payload.OriginalEvent.Metadata,
@@ -96,7 +89,7 @@ var that = this;
 
         var serveEventToHandlers = function(vent) {
             logger.info('serveEventToHandlers | looping through event handlers');
-
+console.log(handlers);
             handlers
                 .filter(h=> {
                     logger.info('serveEventToHandlers | checking event handler :' + h.eventHandlerName + ' for eventName: ' + vent.eventName);
