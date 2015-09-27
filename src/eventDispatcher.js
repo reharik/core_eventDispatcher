@@ -44,14 +44,15 @@ var eventDispatcher = function eventDispatcher(eventstore,
         };
 
         var filterEvents = function(payload) {
-            logger.info('event received by dispatcher');
-            logger.info(payload);
+            //logger.info('event received by dispatcher');
+            //logger.info(payload);
             //logger.trace('filtering event for system events ($)');
             if (!payload.Event || !payload.Event.EventType || payload.Event.EventType.startsWith('$')) {
                 return false;
             }
-            //logger.trace('event passed filter for system events ($)');
-            //logger.trace('filtering event for empty metadata');
+            logger.trace('event passed filter for system events ($)');
+            logger.trace('filtering event for empty metadata');
+            logger.info(payload);
             if (isobjectempty(payload.OriginalEvent.Metadata)) {
                 logger.trace('filterEvents | metadata is empty');
                 return false;
