@@ -15,5 +15,5 @@ module.exports = function(_options) {
     var container = registry(options);
     var plugin = container.getInstanceOf('eventDispatcher');
 
-    return plugin(options);
+    return plugin(options.eventDispatcher || {});
 };
