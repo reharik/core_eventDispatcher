@@ -89,8 +89,6 @@ var eventDispatcher = function eventDispatcher(eventstore,
 
         var serveEventToHandlers = function(vent) {
             logger.info('serveEventToHandlers | looping through event handlers');
-            console.log(handlers.map(x=> x.toString()));
-            console.log(handlers.map(x=> new x()));
             handlers.map(x=> new x())
                 .filter(h=> {
                     logger.info('serveEventToHandlers | checking event handler :' + h.eventHandlerName + ' for eventName: ' + vent.eventName);
@@ -99,9 +97,10 @@ var eventDispatcher = function eventDispatcher(eventstore,
                 })
                 .forEach(m=> {
                     logger.debug('serveEventToHandlers | '+m.eventHandlerName+' event handler does handle event type: ' + vent.eventName);
-                   console.log('for each')
+                    console.log('for each')
                     console.log(m);
                     console.log(m.toString());
+                    console.log(m.handleEvent);
                     m.handleEvent(vent);
                     logger.debug('serveEventToHandlers | event handler finished handling event');
                 });
