@@ -10,6 +10,11 @@ var _mut;
 var mut;
 var testHandler;
 var options = {
+    dagon:{
+        logger: {
+            moduleName: 'EventDispatcher'
+        }
+    },
     logger: {
         moduleName: 'EventDispatcher',
         level:'error'
