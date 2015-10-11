@@ -15,7 +15,7 @@ module.exports = function (_options) {
         })['for']('eventmodels').instantiate(function (i) {
             return i.asFunc();
         })['for']('eventhandlerbase').instantiate(function (i) {
-            return i.asFunc();
+            return i.asClass();
         })['for']('eventstore').require('./app/tests/unitTests/mocks/eventStoreMock').complete();
     });
 };
