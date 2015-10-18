@@ -1,7 +1,7 @@
 /**
  * Created by reharik on 8/14/15.
  */
-
+"use strict";
 
 module.exports = function(logger, JSON, buffer) {
     return function bufferToJson(item) {
