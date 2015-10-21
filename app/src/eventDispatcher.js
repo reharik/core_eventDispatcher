@@ -94,7 +94,7 @@ var eventDispatcher = function eventDispatcher(eventstore,
                 .filter(h=> {
                     logger.info('serveEventToHandlers | checking event handler :' + h.eventHandlerName + ' for eventName: ' + vent.eventName);
                     logger.trace('serveEventToHandlers | ' + h.eventHandlerName + ' handles these events: ' + h.handlesEvents);
-                    return h.handlesEvents.includes(vent.eventName);
+                    return h.handlesEvents.some(x=>x === vent.eventName);
                 })
                 .forEach(m=> {
                     logger.debug('serveEventToHandlers | '+m.eventHandlerName+' event handler does handle event type: ' + vent.eventName);
