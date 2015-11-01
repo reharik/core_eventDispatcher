@@ -11,9 +11,16 @@ var eventDispatcher = function eventDispatcher(eventstore,
                                                extend,
                                                isobjectempty,
                                                eventmodels,
-                                               JSON) {
+                                               JSON,
+                                               _) {
     return function(_options) {
+        var ef = eventmodels.eventFunctions;
+        var fh = eventmodels.functionalHelpers;
         var handlers;
+        var isCommandTypeEvent =  _.compose(_.chain(fh.matches('command')), _.chain(fh.safeProp('streamType')), ef.parseMetadata);
+
+
+
         logger.trace('constructor | constructing gesDispatcher base version');
         logger.debug('constructor | gesDispatcher base options passed in ' + _options);
 
@@ -35,9 +42,9 @@ var eventDispatcher = function eventDispatcher(eventstore,
             //Dispatcher gets raw events from ges in the EventData Form
             logger.debug('constructor | observable created');
             var relevantEvents = rx.Observable.fromEvent(subscription, 'event')
-                .filter(filterEvents)
+                .filter(x=> isCommandTypeEvent(x) === true)
                 .map(createGesEvent, this);
-            relevantEvents.forEach(vent => serveEventToHandlers(vent),
+            relevantEvents.forEach(serveEventToHandlers,
                     error => {
                     throw error;
                 }
@@ -90,8 +97,7 @@ var eventDispatcher = function eventDispatcher(eventstore,
 
         var serveEventToHandlers = function(vent) {
             logger.info('serveEventToHandlers | looping through event handlers');
-            handlers.map(x=> new x())
-                .filter(h=> {
+            handlers.filter(h=> {
                     logger.info('serveEventToHandlers | checking event handler :' + h.eventHandlerName + ' for eventName: ' + vent.eventName);
                     logger.trace('serveEventToHandlers | ' + h.eventHandlerName + ' handles these events: ' + h.handlesEvents);
                     return h.handlesEvents.some(x=>x === vent.eventName);

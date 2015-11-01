@@ -14,7 +14,9 @@ module.exports = function(_options) {
             .for('bluebird').renameTo('Promise')
             .for('corelogger').renameTo('logger').instantiate(i=>i.asFunc().withParameters(options.logger || {}))
             .for('eventmodels').instantiate(i=>i.asFunc())
-            .for('eventhandlerbase').instantiate(i=>i.asClass())
+            .for('eventhandlerbase').instantiate(i=>i.asFunc())
             .for('eventstore').require('./app/tests/unitTests/mocks/eventStoreMock')
+            .for('ramda').renameTo('_')
+            .for('ramdafantasy').renameTo('_fantasy')
             .complete());
 };

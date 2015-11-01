@@ -21,19 +21,33 @@ var options = {
     }
 };
 
+
+
+
+//
+//
+// issue is with the eventstore mock.  it holds on to it's published events needs to be resest before each
+//
+//
+
+
+
+
+
 describe('gesDispatcher', function() {
 
     var container = require('../../registry_test')(options);
     before(function() {
         var TestHandler = container.getInstanceOf('TestEventHandler');
-        eventStore      = container.getInstanceOf('eventstore');
         eventModels     = container.getInstanceOf('eventmodels');
         _mut            = container.getInstanceOf('eventDispatcher');
         testHandler     = new TestHandler();
-        mut             = _mut([testHandler]);
+        mut             = _mut();
     });
 
     beforeEach(function() {
+        var _eventStore      = container.getInstanceOf('eventstore');
+        eventStore = new _eventStore();
         testHandler.clearEventsHandled();
     });
 
@@ -53,33 +67,35 @@ describe('gesDispatcher', function() {
     describe('#StartDispatching', function() {
         context('when calling StartDispatching', function() {
             it('should handle event', async function() {
-                mut.startDispatching();
+                mut.startDispatching([testHandler]);
                 var eventData = {
                     Event           : {EventType: 'event'},
                     OriginalPosition: {},
                     OriginalEvent   : {
-                        Metadata: {
+                        Metadata: new Buffer( JSON.stringify({
                             eventName : 'someEventNotificationOn',
-                            streamType: 'event'
-                        },
+                            streamType: 'command'
+                        })),
                         Data    : {'some': 'data'}
                     }
                 };
                 await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {
                 });
+                console.log('testHandler.getHandledEvents()')
+                console.log(testHandler.getHandledEvents())
                 testHandler.getHandledEvents().length.should.equal(1);
             });
 
             it('should emit the proper type', async function() {
-                mut.startDispatching();
+                mut.startDispatching([testHandler]);
                 var eventData = {
                     Event           : {EventType: 'event'},
                     OriginalPosition: 'the originalPosition',
                     OriginalEvent   : {
-                        Metadata: {
+                        Metadata: new Buffer( JSON.stringify({
                             eventName : 'someEventNotificationOn',
-                            streamType: 'event'
-                        },
+                            streamType: 'command'
+                        })),
                         Data    : {'some': 'data'}
                     }
 
@@ -89,15 +105,15 @@ describe('gesDispatcher', function() {
             });
 
             it('should all the expected values on it', async function() {
-                mut.startDispatching();
+                mut.startDispatching([testHandler]);
                 var eventData     = {
                     Event           : {EventType: 'event'},
                     OriginalPosition: 'the originalPosition',
                     OriginalEvent   : {
-                        Metadata: {
+                        Metadata: new Buffer( JSON.stringify({
                             eventName : 'someEventNotificationOn',
-                            streamType: 'event'
-                        },
+                            streamType: 'command'
+                        })),
                         Data    : {'some': 'data'}
                     }
                 };
@@ -112,15 +128,15 @@ describe('gesDispatcher', function() {
 
         context('when calling StartDispatching with filter breaking vars', function() {
             it('should not post event to handler for system event', async function() {
-                mut.startDispatching();
+                mut.startDispatching([testHandler]);
                 var eventData = {
                     Event           : {EventType: '$testEvent'},
                     OriginalPosition: {},
                     OriginalEvent   : {
-                        Metadata: {
+                        Metadata: new Buffer( JSON.stringify({
                             eventName : 'someEventNotificationOn',
-                            streamType: 'event'
-                        },
+                            streamType: 'command'
+                        })),
                         Data    : {'some': 'data'}
                     }
 
@@ -130,7 +146,7 @@ describe('gesDispatcher', function() {
                 testHandler.eventsHandled.length.should.equal(0);
             });
             it('should not post event to handler for empty metadata', async function() {
-                mut.startDispatching();
+                mut.startDispatching([testHandler]);
                 var eventData = {
                     Event           : {EventType: 'testEvent'},
                     OriginalPosition: {},
@@ -144,15 +160,15 @@ describe('gesDispatcher', function() {
                 testHandler.eventsHandled.length.should.equal(0);
             });
             it('should not post event to handler for empty data', async function() {
-                mut.startDispatching();
+                mut.startDispatching([testHandler]);
                 var eventData = {
                     Event           : {EventType: 'testEvent'},
                     OriginalPosition: {},
                     OriginalEvent   : {
-                        Metadata: {
+                        Metadata: new Buffer( JSON.stringify({
                             eventName : 'someEventNotificationOn',
-                            streamType: 'event'
-                        },
+                            streamType: 'command'
+                        })),
                         Data    : {}
                     }
 
@@ -162,7 +178,7 @@ describe('gesDispatcher', function() {
             });
 
             it('should not break when empty metadata or data', async function() {
-                mut.startDispatching();
+                mut.startDispatching([testHandler]);
                 var eventData = {
                     Event           : {Type: 'testEvent'},
                     OriginalPosition: {},

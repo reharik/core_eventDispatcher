@@ -25,12 +25,14 @@
     "corelogger": "git+https://github.com/reharik/core_logger.git",
     "dagon": "git+https://github.com/reharik/dagon.git#local",
     "eventhandlerbase": "git+https://github.com/reharik/core_eventHandlerBase.git",
-    "eventmodels": "git+https://git@github.com/reharik/core_eventModels.git",
+    "eventmodels": "git+https://git@github.com/reharik/core_eventModels.git#functional",
+    "eventstore": "git+https://github.com/reharik/core_eventStore.git",
     "extend": "^3.0.0",
     "invariant": "^2.1.0",
     "is-object-empty": "^1.0.0",
+    "ramda": "^0.18.0",
+    "ramda-fantasy": "^0.4.1",
     "rx": "^2.5.3",
-    "eventstore": "git+https://github.com/reharik/core_eventStore.git",
     "uuid": "^2.0.1"
   },
   "devDependencies": {

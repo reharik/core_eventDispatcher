@@ -19,6 +19,7 @@ module.exports = function() {
         }
         clearEventsHandled(){
             this.eventsHandled = [];
+            console.log('called clear xxxxxxx')
         }
         getHandledEvents(){
             return this.eventsHandled;
