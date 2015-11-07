@@ -4,11 +4,7 @@
 
 var should = require('chai').should();
 var expect = require('chai').expect;
-var eventStore;
-var eventModels;
-var _mut;
-var mut;
-var testHandler;
+
 var options = {
     dagon:{
         logger: {
@@ -21,42 +17,42 @@ var options = {
     }
 };
 
+var container = require('../../registry_test')(options);
 
-
-
-//
-//
-// issue is with the eventstore mock.  it holds on to it's published events needs to be resest before each
-//
-//
-
-
-
+var eventModels     = container.getInstanceOf('eventmodels');
+var _mut            = container.getInstanceOf('eventDispatcher');
+var _fantasy            = container.getInstanceOf('_fantasy');
+var _            = container.getInstanceOf('_');
+var eventStore      = container.getInstanceOf('eventstore');
+var _testHandler = container.getInstanceOf('TestEventHandler');
+var uuid = container.getInstanceOf('uuid');
+var testHandler;
+var mut;
 
 
 describe('gesDispatcher', function() {
 
-    var container = require('../../registry_test')(options);
+
     before(function() {
-        var TestHandler = container.getInstanceOf('TestEventHandler');
-        eventModels     = container.getInstanceOf('eventmodels');
-        _mut            = container.getInstanceOf('eventDispatcher');
-        testHandler     = new TestHandler();
-        mut             = _mut();
+
     });
 
     beforeEach(function() {
-        var _eventStore      = container.getInstanceOf('eventstore');
-        eventStore = new _eventStore();
+        mut             = _mut();
+        testHandler = _testHandler();
+    });
+
+    afterEach(function(){
         testHandler.clearEventsHandled();
+        eventStore.reset();
     });
 
     describe('#Instanciate Dispatcher', function() {
         context('when instanciating dispatcher with no handlers', function() {
             it('should throw proper error', function() {
-                var errorMsg;
+                var errorMsg = '';
                 try {
-                    _mut()
+                    _mut().startDispatching();
                 }catch(ex){
                     errorMsg = ex.message;
                 }
@@ -76,17 +72,16 @@ describe('gesDispatcher', function() {
                             eventName : 'someEventNotificationOn',
                             streamType: 'command'
                         })),
-                        Data    : {'some': 'data'}
+                        Data    : new Buffer( JSON.stringify({'some': 'data'}))
                     }
                 };
                 await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {
                 });
-                console.log('testHandler.getHandledEvents()')
-                console.log(testHandler.getHandledEvents())
                 testHandler.getHandledEvents().length.should.equal(1);
             });
 
             it('should emit the proper type', async function() {
+                mut             = _mut();
                 mut.startDispatching([testHandler]);
                 var eventData = {
                     Event           : {EventType: 'event'},
@@ -96,7 +91,7 @@ describe('gesDispatcher', function() {
                             eventName : 'someEventNotificationOn',
                             streamType: 'command'
                         })),
-                        Data    : {'some': 'data'}
+                        Data    : new Buffer( JSON.stringify({'some': 'data'}))
                     }
 
                 };
@@ -105,28 +100,57 @@ describe('gesDispatcher', function() {
             });
 
             it('should all the expected values on it', async function() {
+                mut             = _mut();
                 mut.startDispatching([testHandler]);
+                var continuationId = uuid.v4();
                 var eventData     = {
                     Event           : {EventType: 'event'},
                     OriginalPosition: 'the originalPosition',
                     OriginalEvent   : {
                         Metadata: new Buffer( JSON.stringify({
                             eventName : 'someEventNotificationOn',
-                            streamType: 'command'
+                            streamType: 'command',
+                            continuationId: continuationId
                         })),
-                        Data    : {'some': 'data'}
+                        Data    : new Buffer( JSON.stringify({'some': 'data'}))
                     }
                 };
                 await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
                 var eventsHandled = testHandler.eventsHandled[0];
                 eventsHandled.eventName.should.equal('someEventNotificationOn');
                 eventsHandled.originalPosition.should.equal('the originalPosition');
-                eventsHandled.metadata.eventName.should.equal('someEventNotificationOn');
+                eventsHandled.continuationId.should.equal(continuationId);
                 eventsHandled.data.some.should.equal('data');
             })
         });
 
         context('when calling StartDispatching with filter breaking vars', function() {
+
+            //it('should not post event to handler for system event', async function() {
+            //    var ef = eventModels.eventFunctions;
+            //    var fh = eventModels.functionalHelpers;
+            //    var isCommandTypeEvent =  _.compose(_.map(fh.matches('command')), _.chain(fh.safeProp('streamType')), ef.parseMetadata);
+            //    var vent = {
+            //        Event           : {EventType: 'testEvent'},
+            //        OriginalPosition: {},
+            //        OriginalEvent   : {
+            //            Metadata: new Buffer(JSON.stringify({
+            //                eventName : 'someEventNotificationOn',
+            //                streamType: 'command'
+            //            })),
+            //            Data    : {'some': 'data'}
+            //        }
+            //
+            //    };
+            //    var result = [vent].filter(x=>_.lift(_.and)( ef.isNonSystemEvent(x), isCommandTypeEvent(x)).isJust()).map(x=>x == x);
+            //    //result
+            //    //var result = filter(vent);
+            //    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+            //    console.log(result)
+            //    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+            //});
+
+
             it('should not post event to handler for system event', async function() {
                 mut.startDispatching([testHandler]);
                 var eventData = {
@@ -137,7 +161,7 @@ describe('gesDispatcher', function() {
                             eventName : 'someEventNotificationOn',
                             streamType: 'command'
                         })),
-                        Data    : {'some': 'data'}
+                        Data    : new Buffer( JSON.stringify({'some': 'data'}))
                     }
 
                 };
@@ -152,7 +176,7 @@ describe('gesDispatcher', function() {
                     OriginalPosition: {},
                     OriginalEvent   : {
                         Metadata: {},
-                        Data    : {'some': 'data'}
+                        Data    : new Buffer( JSON.stringify({'some': 'data'}))
                     }
 
                 };
@@ -186,6 +210,16 @@ describe('gesDispatcher', function() {
                 };
                 await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
                 testHandler.eventsHandled.length.should.equal(0);
+            });
+
+            it('should not break when empty metadata or data', async function() {
+                var eventData = {
+                    Event           : {Type: 'testEvent'},
+                    OriginalPosition: {},
+                    OriginalEvent   : {}
+                };
+                eventStore.subscribeToAllFrom().on('event', function(x){ console.log(x)})
+                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
             });
 
         });

@@ -16,10 +16,11 @@ var eventDispatcher = function eventDispatcher(eventstore,
     return function(_options) {
         var ef = eventmodels.eventFunctions;
         var fh = eventmodels.functionalHelpers;
-        var handlers;
-        var isCommandTypeEvent =  _.compose(_.chain(fh.matches('command')), _.chain(fh.safeProp('streamType')), ef.parseMetadata);
-
-
+        var isCommand =  _.compose(_.map(fh.matches('command')), _.chain(fh.safeProp('streamType')), ef.parseMetadata);
+        var isValidCommand = x=> _.and(ef.isNonSystemEvent(x), _.and(isCommand(x).isJust(), ef.parseData(x).isJust()));
+        var eventName =  _.compose(_.chain(fh.safeProp('eventName')), ef.parseMetadata);
+        var continuationId =  _.compose(_.chain(fh.safeProp('continuationId')), ef.parseMetadata);
+        var originalPosition =  _.map(fh.safeProp('originalPosition'));
 
         logger.trace('constructor | constructing gesDispatcher base version');
         logger.debug('constructor | gesDispatcher base options passed in ' + _options);
@@ -33,78 +34,50 @@ var eventDispatcher = function eventDispatcher(eventstore,
         logger.debug('constructor | gesDispatcher base options after merge ' + JSON.stringify(options, null, 4));
 
         var startDispatching = function(_handlers) {
-            handlers = _handlers;
-            invariant(handlers, 'Dispatcher requires at least one handler');
+            invariant(_handlers, 'Dispatcher requires at least one handler');
+            var serveHandlers = _.curry(x => serveEventToHandlers(_handlers,x));
             logger.info('startDispatching | startDispatching called');
 
-            var subscription = eventstore.subscribeToAllFrom();
-
-            //Dispatcher gets raw events from ges in the EventData Form
-            logger.debug('constructor | observable created');
-            var relevantEvents = rx.Observable.fromEvent(subscription, 'event')
-                .filter(x=> isCommandTypeEvent(x) === true)
-                .map(createGesEvent, this);
-            relevantEvents.forEach(serveEventToHandlers,
+            rx.Observable.fromEvent(eventstore.subscribeToAllFrom(), 'event')
+                .filter(isValidCommand)
+                .map(createGesEvent2)
+                .forEach(serveHandlers,
                     error => {
                     throw error;
-                }
-            );
+                    });
         };
 
-        var filterEvents = function(payload) {
-            //logger.info('event received by dispatcher');
-            //logger.info(payload);
-            //logger.trace('filtering event for system events ($)');
-            if (!payload.Event || !payload.Event.EventType || payload.Event.EventType.startsWith('$')) {
-                return false;
-            }
-            logger.trace('event passed filter for system events ($)');
-            logger.trace('filtering event for empty metadata');
-            logger.info(payload);
-            if (isobjectempty(payload.OriginalEvent.Metadata)) {
-                logger.trace('filterEvents | metadata is empty');
-                return false;
-            }
-            logger.trace('filterEvents | event has metadata');
-            logger.trace('filterEvents | filtering event for empty data');
-            if (isobjectempty(payload.OriginalEvent.Data)) {
-                logger.trace('filterEvents | data is empty');
-                return false;
-            }
-            logger.trace('filterEvents | event has data');
-            logger.trace('filterEvents | filtering event for streamType');
-
-            var metadata = bufferToJson(payload.OriginalEvent.Metadata);
-            if (!metadata || !metadata.streamType || metadata.streamType != options.targetStreamType) {
-                logger.trace('filterEvents | event is not of proper stream type. Expected ' + options.targetStreamType + ' but was ' + metadata.streamType);
-                return false;
-            }
-
-            logger.trace('filterEvents | event is of proper targetStreamType');
-            return true;
+        var createGesEvent2 = function(payload) {
+            var vent = {
+                eventName       : eventName(payload),
+                continuationId  : continuationId(payload),
+                originalPosition: originalPosition(payload),
+                data            : ef.parseData(payload)
+            };
+            console.log(vent);
+            return vent
         };
+        //    var createGesEvent = function(payload) {
+        //    logger.debug('createGesEvent | event passed through filter');
+        //    var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
+        //        payload.OriginalEvent.Data,
+        //        payload.OriginalEvent.Metadata,
+        //        payload.OriginalPosition
+        //    );
+        //    logger.info('createGesEvent | event transfered into gesEvent: ' + JSON.stringify(vent, null, 4));
+        //    return vent;
+        //};
 
-        var createGesEvent = function(payload) {
-            logger.debug('createGesEvent | event passed through filter');
-            var vent = eventmodels.gesEvent(bufferToJson(payload.OriginalEvent.Metadata).eventName,
-                payload.OriginalEvent.Data,
-                payload.OriginalEvent.Metadata,
-                payload.OriginalPosition
-            );
-            logger.info('createGesEvent | event transfered into gesEvent: ' + JSON.stringify(vent, null, 4));
-            return vent;
-        };
-
-        var serveEventToHandlers = function(vent) {
+        var serveEventToHandlers = function(handlers, vent) {
             logger.info('serveEventToHandlers | looping through event handlers');
             handlers.filter(h=> {
                     logger.info('serveEventToHandlers | checking event handler :' + h.eventHandlerName + ' for eventName: ' + vent.eventName);
                     logger.trace('serveEventToHandlers | ' + h.eventHandlerName + ' handles these events: ' + h.handlesEvents);
                     return h.handlesEvents.some(x=>x === vent.eventName);
                 })
-                .forEach(m=> {
-                    logger.debug('serveEventToHandlers | '+m.eventHandlerName+' event handler does handle event type: ' + vent.eventName);
-                    m.handleEvent(vent);
+                .forEach(h=> {
+                    logger.debug('serveEventToHandlers | '+h.eventHandlerName+' event handler does handle event type: ' + vent.eventName);
+                    h.handleEvent(vent);
                     logger.debug('serveEventToHandlers | event handler finished handling event');
                 });
 

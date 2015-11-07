@@ -3,28 +3,35 @@
  */
 
 module.exports = function() {
-    return class TestEventHandler {
-        constructor() {
-            this.handlesEvents = ['someEventNotificationOn',
-                'someEventNotificationOff',
-                'someExceptionNotificationOn',
-                'someExceptionNotificationOff',
-                'testingEventNotificationOn',
-                'testingEventNotificationOff'];
-            this.eventsHandled = [];
-            this.eventHandlerName = 'TestEventHandler';
-        }
-        handleEvent(vent){
-            this.eventsHandled.push(vent);
-        }
-        clearEventsHandled(){
-            this.eventsHandled = [];
-            console.log('called clear xxxxxxx')
-        }
-        getHandledEvents(){
-            return this.eventsHandled;
-        }
+    return function testEventHandler() {
+        var handlesEvents    = [
+            'someEventNotificationOn',
+            'someEventNotificationOff',
+            'someExceptionNotificationOn',
+            'someExceptionNotificationOff',
+            'testingEventNotificationOn',
+            'testingEventNotificationOff'
+        ];
+        var eventsHandled    = [];
+        var eventHandlerName = 'TestEventHandler';
 
+        var handleEvent        = function(vent) {
+            eventsHandled.push(vent);
+        };
+        var clearEventsHandled = function() {
+            eventsHandled = [];
+        };
+        var getHandledEvents   = function() {
+            return eventsHandled;
+        };
+        return {
+            handlesEvents,
+            eventHandlerName,
+            handleEvent,
+            clearEventsHandled,
+            getHandledEvents,
+            eventsHandled
+        }
 
     };
 };
