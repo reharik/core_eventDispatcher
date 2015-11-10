@@ -8,23 +8,18 @@ module.exports = function functions(eventmodels, _fantasy, _) {
         var ef             = eventmodels.eventFunctions;
         var fh             = eventmodels.functionalHelpers;
         var Maybe          = _fantasy.Maybe;
-        //var hasData = ef.parseData.map(x=> x.isJust() ? Maybe.of(true):Maybe.of(false));
-        //var hasData = _.compose( _.map(Maybe.isJust() ? Maybe.of(true):Maybe.of(false)) ,ef.parseData);
-        var matchesCommand = _.compose( Maybe.maybe(Maybe.of(false), Maybe), _.chain(fh.maybeMatches('command')), _.chain(fh.safeProp('streamType')), ef.parseMetadata);
-        //var isValidCommand   = _.compose(fh.log,_.and(ef.isNonSystemEvent, _.compose(matchesCommand,fh.log, ef.parseData)));
-        //var isValidCommand   = _.and(ef.isNonSystemEvent, _.and(matchesCommand, ef.parseData));
-        var isValidCommand   = x => _.and(ef.isNonSystemEvent(x), _.and(matchesCommand(x).isJust(), ef.parseData(x).isJust()));
-        //
-        //    var isValidCommand = x => [matchesCommand, ef.parseData]
-        //        .map(fn => {console.log('xxxxxxxxxx');console.log(fn.toString()); console.log(fn(x)); return fn(x)}).reduce(z=>{console.log('zzzzzzz');console.log(z);return  z === Maybe.of(true)});
+        var matchesCommand = _.compose(_.chain(fh.maybeMatches('command')), _.chain(fh.safeProp('streamType')), ef.parseMetadata);
+        var isValidCommand = x => [ef.isNonSystemEvent, matchesCommand, ef.parseData]
+            .map( fn => fn(x).isJust() )
+            .reduce( (a,b) => a && b );
 
         var eventName        = _.compose(_.chain(fh.safeProp('eventName')), ef.parseMetadata);
         var continuationId   = _.compose(_.chain(fh.safeProp('continuationId')), ef.parseMetadata);
-        var originalPosition = fh.safeProp('originalPosition');
+        var originalPosition = fh.safeProp('OriginalPosition');
 
         var transformEvent = function(payload) {
             var vent = {
-                eventName       : eventName(payload),
+                eventName       : _.map(eventName) payload),
                 continuationId  : continuationId(payload),
                 originalPosition: originalPosition(payload),
                 data            : ef.parseData(payload)

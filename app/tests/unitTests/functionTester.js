@@ -11,7 +11,6 @@ var container = require('../../registry_test')({});
 var eventmodels     = container.getInstanceOf('eventmodels');
 var _            = container.getInstanceOf('_');
 var _fantasy            = container.getInstanceOf('_fantasy');
-var uuid = container.getInstanceOf('uuid');
 var ef = eventmodels.eventFunctions;
 var fh = eventmodels.functionalHelpers;
 var Maybe = _fantasy.Maybe;
@@ -60,13 +59,13 @@ describe('gesDispatcher', function() {
                     eventName : 'someEventNotificationOn',
                     streamType: 'event'
                 }));
-                mut.matchesCommand(eventData).should.eql(Maybe.of(false));
+                mut.matchesCommand(eventData).should.eql(Maybe.Nothing());
             })
         });
 
         context('matchesCommand called on empty value', function() {
             it('should return false', function() {
-                mut.matchesCommand({}).should.eql(Maybe.of(false));
+                mut.matchesCommand({}).should.eql(Maybe.Nothing());
             })
         });
 
@@ -91,7 +90,6 @@ describe('gesDispatcher', function() {
                     eventName : 'someEventNotificationOn',
                     streamType: 'event'
                 }));
-                console.log(ef.parseMetadata(eventData));
                 mut.isValidCommand(eventData).should.be.false;
             });
         });
@@ -140,13 +138,13 @@ describe('gesDispatcher', function() {
     describe('#ORIGINALPOSITION', function() {
         context('called on an event with an originalPosition', function() {
             it('should return proper originalPosition', function() {
-                mut.originalPosition(eventData).should.eql(Maybe.of(eventData.originalPosition));
+                mut.originalPosition(eventData).should.eql(Maybe.of(eventData.OriginalPosition));
             });
         });
 
         context('called on an eventn with no originalPosition', function() {
             it('should return proper Maybe Nothin', function() {
-                eventData.originalPosition='';
+                eventData.OriginalPosition=undefined;
                 mut.originalPosition(eventData).should.eql(Maybe.Nothing());
             });
         });
