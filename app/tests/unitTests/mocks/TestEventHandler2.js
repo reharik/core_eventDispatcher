@@ -3,14 +3,8 @@
  */
 
 module.exports = function() {
-    return function testEventHandler() {
+    return function testEventHandler2() {
         var handlesEvents    = [
-            'someEventNotificationOn',
-            'someEventNotificationOff',
-            'someExceptionNotificationOn',
-            'someExceptionNotificationOff',
-            'testingEventNotificationOn',
-            'testingEventNotificationOff'
         ];
         var eventsHandled    = [];
         var eventHandlerName = 'TestEventHandler';

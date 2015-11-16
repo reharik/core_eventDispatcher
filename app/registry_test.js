@@ -15,8 +15,8 @@ module.exports = function(_options) {
             .for('corelogger').renameTo('logger').instantiate(i=>i.asFunc().withParameters(options.logger || {}))
             .for('eventmodels').instantiate(i=>i.asFunc())
             //.for('eventhandlerbase').instantiate(i=>i.asFunc())
-            //.for('eventstore').require('./app/tests/unitTests/mocks/eventStoreMock').instantiate(i=>i.asFunc())
-            .for('ramda').renameTo('_')
+            .for('eventstore').require('./app/tests/unitTests/mocks/eventStoreMock').instantiate(i=>i.asFunc())
+            .for('ramda').renameTo('R')
             .for('ramdafantasy').renameTo('_fantasy')
             .complete());
 };

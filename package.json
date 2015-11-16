@@ -33,6 +33,7 @@
     "ramda": "^0.18.0",
     "ramda-fantasy": "^0.4.1",
     "rx": "^2.5.3",
+    "treis": "^2.3.16",
     "uuid": "^2.0.1"
   },
   "devDependencies": {

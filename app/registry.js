@@ -17,7 +17,7 @@ module.exports = function(_options) {
         .for('eventstore').instantiate(i=>i.asFunc().withParameters(options|| {}))
         .for('bluebird').renameTo('Promise')
         .for('corelogger').renameTo('logger').instantiate(i=>i.asFunc().withParameters(options.logger || {}))
-            .for('ramda').renameTo('_')
+            .for('ramda').renameTo('R')
             .for('ramdafantasy').renameTo('_fantasy')
             .complete());
 };

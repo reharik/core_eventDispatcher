@@ -16,29 +16,35 @@ var fh = eventmodels.functionalHelpers;
 var Maybe = _fantasy.Maybe;
 var Identity = _fantasy.Identity;
 var uuid = container.getInstanceOf('uuid');
-var _mut = container.getInstanceOf('functions');
+var _mut = container.getInstanceOf('mapAndFilterStream');
 var mut;
 var eventData;
 var continuationId = uuid.v4();
-
+var sysEvent;
 
 
 describe('gesDispatcher', function() {
     before(function() {
-        mut = _mut();
+        mut = _mut('command');
     });
 
     beforeEach(function() {
+        sysEvent = {
+            Event           : { EventType: '$event' }
+        };
         eventData = {
             Event           : {EventType: 'event'},
-            OriginalPosition: {x:'123',y:'456'},
+            OriginalPosition: {
+                x: '123',
+                y: '456'
+            },
             OriginalEvent   : {
-                Metadata: new Buffer( JSON.stringify({
-                    eventName : 'someEventNotificationOn',
-                    streamType: 'command',
-                    continuationId : continuationId
+                Metadata: new Buffer(JSON.stringify({
+                    eventName     : 'someEventNotificationOn',
+                    streamType    : 'command',
+                    continuationId: continuationId
                 })),
-                Data    : new Buffer( JSON.stringify({'some': 'data'}))
+                Data    : new Buffer(JSON.stringify({'some': 'data'}))
             }
         };
     });
@@ -46,61 +52,60 @@ describe('gesDispatcher', function() {
     afterEach(function() {
     });
 
-    describe('#MATCHESCOMMAND', function() {
-        context('matchesCommand called on a command', function() {
+    describe('#MATCHESSTREAMTYPE', function() {
+        context('matchesStreamType called on a command', function() {
             it('should return maybe of true', function() {
-                mut.matchesCommand(eventData).should.eql(Maybe.of(true));
+                mut.matchesStreamType(eventData).should.eql(Maybe.of(true));
             });
         });
 
-        context('matchesCommand called on an event', function() {
+        context('matchesStreamType called on an event', function() {
             it('should return maybe.false', function() {
                 eventData.OriginalEvent.Metadata = new Buffer(JSON.stringify({
                     eventName : 'someEventNotificationOn',
                     streamType: 'event'
                 }));
-                mut.matchesCommand(eventData).should.eql(Maybe.Nothing());
+                mut.matchesStreamType(eventData).should.eql(Maybe.of(false));
             })
         });
 
-        context('matchesCommand called on empty value', function() {
+        context('matchesStreamType called on empty value', function() {
             it('should return false', function() {
-                mut.matchesCommand({}).should.eql(Maybe.Nothing());
+                mut.matchesStreamType({}).should.eql(Maybe.Nothing());
             })
         });
 
     });
 
-    describe('#ISVALIDCOMMAND', function() {
-        context('isValidCommand called on a valid command', function() {
+    describe('#ISVALIDSTREAMTYPE', function() {
+        context('isValidStreamType called on a valid command', function() {
             it('should return true', function() {
-                mut.isValidCommand(eventData).should.be.true;
+                mut.isValidStreamType(eventData).should.be.true;
             });
         });
-        context('isValidCommand called on a system event', function() {
+        context('isValidStreamType called on a system event', function() {
             it('should return false', function() {
                 eventData.Event.EventType = '$event';
-                mut.isValidCommand(eventData).should.be.false;
+                mut.isValidStreamType(eventData).should.be.false;
             });
         });
 
-        context('isValidCommand called on a non comamnd event', function() {
+        context('isValidStreamType called on a non comamnd event', function() {
             it('should return false', function() {
                 eventData.OriginalEvent.Metadata = new Buffer(JSON.stringify({
                     eventName : 'someEventNotificationOn',
                     streamType: 'event'
                 }));
-                mut.isValidCommand(eventData).should.be.false;
+                mut.isValidStreamType(eventData).should.be.false;
             });
         });
-        context('isValidCommand called on a comamnd with no data', function() {
+        context('isValidStreamType called on a comamnd with no data', function() {
             it('should return false', function() {
                 eventData.OriginalEvent.Data = {};
-                mut.isValidCommand(eventData).should.be.false;
+                mut.isValidStreamType(eventData).should.be.false;
             });
         });
     });
-
 
     describe('#EVENTNAME', function() {
         context('called on an event with a name', function() {
@@ -110,7 +115,7 @@ describe('gesDispatcher', function() {
         });
         context('called on an event with no namew ', function() {
             it('should return nothing', function() {
-                eventData.OriginalEvent.Metadata = new Buffer( JSON.stringify({
+                eventData.OriginalEvent.Metadata = new Buffer(JSON.stringify({
                     streamType: 'command'
                 }));
                 mut.eventName(eventData).should.eql(Maybe.Nothing());
@@ -127,7 +132,7 @@ describe('gesDispatcher', function() {
 
         context('called on an event with no continuationID', function() {
             it('should return proper Maybe Nothin', function() {
-                eventData.OriginalEvent.Metadata = new Buffer( JSON.stringify({
+                eventData.OriginalEvent.Metadata = new Buffer(JSON.stringify({
                     streamType: 'command'
                 }));
                 mut.continuationId(eventData).should.eql(Maybe.Nothing());
@@ -144,10 +149,33 @@ describe('gesDispatcher', function() {
 
         context('called on an eventn with no originalPosition', function() {
             it('should return proper Maybe Nothin', function() {
-                eventData.OriginalPosition=undefined;
+                eventData.OriginalPosition = undefined;
                 mut.originalPosition(eventData).should.eql(Maybe.Nothing());
             });
         });
     });
 
+    describe('#TRANSFORMEVENT', function() {
+        context('called on an event with all expected properties', function() {
+            it('should return new event form with all properties', function() {
+                var event = mut.transformEvent(eventData);
+                event.continuationId.should.eql(continuationId);
+            });
+        });
+
+    });
+
+    describe('#ISNONSYSTEMEVENT', function() {
+        context('when calling isNonSystemEvent on a system event', function() {
+            it('should return a null maybe', function() {
+                mut.isNonSystemEvent(sysEvent).should.eql(Maybe.of(false));
+            })
+        });
+        //
+        context('when calling isNonSystemEvent on a NON system event', function() {
+            it('should return a maybe of true', function() {
+                mut.isNonSystemEvent(eventData).should.eql(Maybe.of(true));
+            })
+        });
+    });
 });
