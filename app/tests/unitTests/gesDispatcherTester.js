@@ -19,10 +19,7 @@ var options = {
 
 var container = require('../../registry_test')(options);
 
-var eventModels     = container.getInstanceOf('eventmodels');
 var mut            = container.getInstanceOf('eventDispatcher');
-var _fantasy            = container.getInstanceOf('_fantasy');
-var _            = container.getInstanceOf('_');
 var eventStore      = container.getInstanceOf('eventstore');
 var _testHandler = container.getInstanceOf('TestEventHandler');
 var _testHandler2 = container.getInstanceOf('TestEventHandler2');
@@ -43,18 +40,32 @@ describe('gesDispatcher', function() {
 
     afterEach(function(){
         testHandler.clearEventsHandled();
+        eventStore.reset();
     });
 
     describe('#Instanciate Dispatcher', function() {
         context('when instanciating dispatcher with no handlers', function() {
-            it('should throw proper error', function() {
+            it('should throw proper error', async function() {
                 var errorMsg = '';
                 try {
-                    mut();
+                    mut(null, 'command');
+                    var eventData = {
+                        Event           : {EventType: 'event'},
+                        OriginalPosition: {},
+                        OriginalEvent   : {
+                            Metadata: new Buffer( JSON.stringify({
+                                eventName : 'someEventNotificationOn',
+                                streamType: 'command'
+                            })),
+                            Data    : new Buffer( JSON.stringify({'some': 'data'}))
+                        }
+                    };
+                    await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {
+                    });
                 }catch(ex){
                     errorMsg = ex.message;
                 }
-                errorMsg.should.equal("Invariant Violation: Dispatcher requires at least one handler");
+                errorMsg.should.equal("Dispatcher requires at least one handler");
             })
         });
     });
@@ -207,17 +218,6 @@ describe('gesDispatcher', function() {
                 await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
                 testHandler.eventsHandled.length.should.equal(0);
             });
-
-            it('should not break when empty metadata or data', async function() {
-                var eventData = {
-                    Event           : {Type: 'testEvent'},
-                    OriginalPosition: {},
-                    OriginalEvent   : {}
-                };
-                eventStore.subscribeToAllFrom().on('event', function(x){ console.log(x)})
-                await eventStore.appendToStreamPromise('someEventNotificationOn', eventData, ()=> {});
-            });
-
         });
     });
 });

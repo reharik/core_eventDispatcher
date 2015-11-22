@@ -14,7 +14,6 @@ var _fantasy            = container.getInstanceOf('_fantasy');
 var ef = eventmodels.eventFunctions;
 var fh = eventmodels.functionalHelpers;
 var Maybe = _fantasy.Maybe;
-var Identity = _fantasy.Identity;
 var uuid = container.getInstanceOf('uuid');
 var _mut = container.getInstanceOf('mapAndFilterStream');
 var mut;
@@ -25,7 +24,6 @@ var sysEvent;
 
 describe('gesDispatcher', function() {
     before(function() {
-        mut = _mut('command');
     });
 
     beforeEach(function() {
@@ -47,6 +45,8 @@ describe('gesDispatcher', function() {
                 Data    : new Buffer(JSON.stringify({'some': 'data'}))
             }
         };
+        mut = _mut('command');
+
     });
 
     afterEach(function() {

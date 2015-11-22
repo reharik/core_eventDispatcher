@@ -13,7 +13,6 @@ var _fantasy = container.getInstanceOf('_fantasy');
 var Maybe = _fantasy.Maybe;
 var Right = _fantasy.Either.Right;
 var Left = _fantasy.Either.Left;
-var Identity = _fantasy.Identity;
 var uuid = container.getInstanceOf('uuid');
 var treis = container.getInstanceOf('treis');
 var _mut = container.getInstanceOf('serveToHandlers');
@@ -21,9 +20,12 @@ var mut;
 var eventData;
 var continuationId = uuid.v4();
 var sysEvent;
-var rHandlers;
 var matchingHandler;
 var handlers;
+var _testHandler = container.getInstanceOf('TestEventHandler');
+var _testHandler2 = container.getInstanceOf('TestEventHandler2');
+var testHandler;
+var testHandler2;
 
 
 describe('gesDispatcher', function() {
@@ -40,12 +42,6 @@ describe('gesDispatcher', function() {
             originalPosition: 'the originalPosition',
             data            : {some: 'data'}
         };
-        rHandlers =Right([{
-                        handlesEvents:['someEventNotificationOn','someOtherCrap']
-                    },
-                    {
-                        handlesEvents:['someOtherCrap']
-                    }]);
 
         handlers =[{
             handlesEvents:['someEventNotificationOn','someOtherCrap']
@@ -58,7 +54,9 @@ describe('gesDispatcher', function() {
             handlesEvents:['someEventNotificationOn','someOtherCrap']
         };
 
-        mut = _mut(handlers);
+        testHandler = _testHandler();
+        testHandler2 = _testHandler2();
+        mut = _mut([testHandler,testHandler2]);
 
     });
 
@@ -92,14 +90,7 @@ describe('gesDispatcher', function() {
             it('should return proper values', function() {
                 //console.log(mut.filteredHandlers(eventData));
                 console.log(mut.filteredHandlers(eventData));
-                mut.filteredHandlers(eventData)[0].should.eql(handlers[0]);
-            });
-        });
-
-        context('filteredHandlers called a left value', function() {
-            it('should return proper values', function() {
-                mut = _mut();
-                console.log(mut.filteredHandlers(eventData))
+                mut.filteredHandlers(eventData).should.eql(Right([testHandler]));
             });
         });
     });
@@ -107,9 +98,34 @@ describe('gesDispatcher', function() {
     describe('#FILTEREDHANDLERS', function() {
         context('filteredHandlers called an array with non matching value', function() {
             it('should return proper values', function() {
-                //console.log(mut.filteredHandlers(eventData));
                 console.log(mut.filteredHandlers(eventData));
-                mut.filteredHandlers(eventData)[0].should.eql(handlers[0]);
+                mut.filteredHandlers(eventData).should.eql(Right([testHandler]));
+            });
+        });
+    });
+
+    describe('#SERVEEVENTTOHANDLERS', function() {
+        context('serveEventToHandlers with an event that it handles', function() {
+            it('should call the handler', async function() {
+                console.log(mut.filteredHandlers(eventData));
+                await mut.serveEventToHandlers(eventData);
+                testHandler.getHandledEvents().length.should.equal(1);
+            });
+        });
+
+        context('serveEventToHandlers with an event that it does not handle', function() {
+            it('should NOT call the handler', async function() {
+                eventData.eventName = "scoobydoo";
+                await mut.serveEventToHandlers(eventData);
+                testHandler.getHandledEvents().length.should.equal(0);
+            });
+        });
+
+        context('serveEventToHandlers with an event does not have a name', function() {
+            it('should not blow up', async function() {
+                eventData.eventName = undefined;
+                await mut.serveEventToHandlers(eventData);
+                testHandler.getHandledEvents().length.should.equal(0);
             });
         });
     });
