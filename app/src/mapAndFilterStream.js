@@ -9,8 +9,9 @@ module.exports = function mapAndFilterStream(eventmodels, R,treis) {
         var fh = eventmodels.functionalHelpers;
         var log = function(x){ console.log(x); return x; };
 
+        var doesNotStartsWith = R.curry((x,y) => !y.startsWith(x));
         //isNonSystemEvent:: JSON -> Maybe bool
-        var isNonSystemEvent = R.compose(R.map(R.compose(R.not, string.startsWith('$'))), R.chain(fh.safeProp('EventType')), fh.safeProp('Event'));
+        var isNonSystemEvent = R.compose(log,R.map(doesNotStartsWith('$')), R.chain(fh.safeProp('EventType')), fh.safeProp('Event'));
         //matchesStreamType:: string -> (JSON -> Maybe bool)
         var matchesStreamType = R.compose(R.map(R.equals(streamType)), R.chain(fh.safeProp('streamType')), ef.parseMetadata);
         //hasData:: JSON -> Maybe bool
