@@ -24,7 +24,7 @@
     "buffer": "^3.4.3",
     "corelogger": "git+https://github.com/reharik/core_logger.git",
     "dagon": "git+https://github.com/reharik/dagon.git#local",
-    "eventhandlerbase": "git+https://github.com/reharik/core_eventHandlerBase.git",
+    "eventhandlerbase": "git+https://github.com/reharik/core_eventHandlerBase.git#functional",
     "eventmodels": "git+https://git@github.com/reharik/core_eventModels.git#functional",
     "eventstore": "git+https://github.com/reharik/core_eventStore.git",
     "extend": "^3.0.0",
