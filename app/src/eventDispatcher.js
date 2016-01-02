@@ -3,7 +3,7 @@
  */
 "use strict";
 
-var eventDispatcher = function eventDispatcher(eventstore,
+var eventDispatcher = function eventDispatcher(eventstoreplugin,
                                                logger,
                                                rx,
                                                R,
@@ -15,7 +15,7 @@ var eventDispatcher = function eventDispatcher(eventstore,
 
         var mAndF = mapAndFilterStream(streamType);
         var _s = serveToHandlers(_handlers);
-        var stream = rx.Observable.fromEvent(eventstore.subscribeToAllFrom(), 'event')
+        var stream = rx.Observable.fromEvent(eventstoreplugin.subscribeToAllFrom(), 'event')
             .filter( mAndF.isValidStreamType)
             .map( mAndF.transformEvent);
 
