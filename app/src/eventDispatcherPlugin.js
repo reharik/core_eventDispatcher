@@ -9,9 +9,9 @@ var eventDispatcher = function eventDispatcher(eventstore,
                                                R,
                                                mapAndFilterStream,
                                                serveToHandlers,treis) {
-    return function(_handlers, streamType) {
+    return function(_handlers) {
         return {
-            startDispatching: function() {
+            startDispatching: function(streamType) {
                 logger.info('startDispatching | startDispatching called');
 
                 var mAndF  = mapAndFilterStream(streamType);
