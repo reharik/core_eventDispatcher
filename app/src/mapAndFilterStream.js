@@ -17,7 +17,7 @@ module.exports = function mapAndFilterStream(eventmodels, R,treis) {
         //hasData:: JSON -> Maybe bool
         var hasData = R.compose(R.map(R.not), R.map(R.isEmpty), ef.parseData);
         //isValidStreamType:: JSON -> Maybe bool
-        var isValidStreamType = R.map(x => [isNonSystemEvent, matchesStreamType, hasData]
+        var isValidStreamType = R.compose(R.identity, x => [isNonSystemEvent, matchesStreamType, hasData]
             .map(fn => R.equals(true, fn(x).getOrElse()))
             .reduce((a, b) => a && b));
 

@@ -1,6 +1,7 @@
 /**
  * Created by reharik on 11/14/15.
  */
+"use strict";
 
 
 var should = require('chai').should();
@@ -104,29 +105,29 @@ describe('gesDispatcher', function() {
         });
     });
 
-    describe('#SERVEEVENTTOHANDLERS', function() {
-        context('serveEventToHandlers with an event that it handles', function() {
-            it('should call the handler', async function() {
-                console.log(mut.filteredHandlers(eventData));
-                await mut.serveEventToHandlers(eventData);
-                testHandler.getHandledEvents().length.should.equal(1);
-            });
-        });
+    //describe('#SERVEEVENTTOHANDLERS', function() {
+    //    context('serveEventToHandlers with an event that it handles', function() {
+    //        it('should call the handler', async function() {
+    //            console.log(mut.filteredHandlers(eventData));
+    //            await mut.serveEventToHandlers(eventData);
+    //            testHandler.getHandledEvents().length.should.equal(1);
+    //        });
+    //    });
 
-        context('serveEventToHandlers with an event that it does not handle', function() {
-            it('should NOT call the handler', async function() {
-                eventData.eventName = "scoobydoo";
-                await mut.serveEventToHandlers(eventData);
-                testHandler.getHandledEvents().length.should.equal(0);
-            });
-        });
-
-        context('serveEventToHandlers with an event does not have a name', function() {
-            it('should not blow up', async function() {
-                eventData.eventName = undefined;
-                await mut.serveEventToHandlers(eventData);
-                testHandler.getHandledEvents().length.should.equal(0);
-            });
-        });
-    });
+    //    context('serveEventToHandlers with an event that it does not handle', function() {
+    //        it('should NOT call the handler', async function() {
+    //            eventData.eventName = "scoobydoo";
+    //            await mut.serveEventToHandlers(eventData);
+    //            testHandler.getHandledEvents().length.should.equal(0);
+    //        });
+    //    });
+    //
+    //    context('serveEventToHandlers with an event does not have a name', function() {
+    //        it('should not blow up', async function() {
+    //            eventData.eventName = undefined;
+    //            await mut.serveEventToHandlers(eventData);
+    //            testHandler.getHandledEvents().length.should.equal(0);
+    //        });
+    //    });
+    //});
 });

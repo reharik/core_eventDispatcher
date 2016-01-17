@@ -1,6 +1,8 @@
 /**
  * Created by parallels on 9/6/15.
  */
+"use strict";
+
 module.exports = function(Promise, events) {
 
     return function() {
