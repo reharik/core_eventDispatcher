@@ -2,6 +2,7 @@
  * Created by rharik on 11/7/15.
  */
 
+"use strict";
 
 module.exports = function functions(R, _fantasy, eventmodels,treis) {
     return function(_handlers) {
