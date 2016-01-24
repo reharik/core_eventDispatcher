@@ -1,6 +1,9 @@
 /**
  * Created by rharik on 7/6/15.
  */
+
+"use strict";
+
 var demand = require('must');
 
 

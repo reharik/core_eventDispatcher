@@ -16,16 +16,20 @@ module.exports = function(_options) {
             .requireDirectoryRecursively('./app/src')
             .requireDirectoryRecursively('./app/tests/unitTests/mocks')
             .requiredModuleRegistires(['eventstore','eventmodels','eventhandlerbase'])
-            .for('eventstore').require('./app/tests/unitTests/mocks/eventStoreMock')
+            //.for('eventstore').require('./app/tests/unitTests/mocks/eventStoreMock')
+            //.for('readstorerepository').require('./app/tests/unitTests/mocks/readStoreRepositoryMock')
             .for('corelogger').renameTo('logger')
             .for('ramda').renameTo('R')
             .for('ramdafantasy').renameTo('_fantasy')
             .for('bluebird').renameTo('Promise')
             .for('eventstore').replaceWith('eventStoreMock')
+            .for('readstorerepository').replaceWith('readStoreRepositoryMock')
             .for('eventmodels').replaceWith('eventModelsPlugin')
+            .for('eventhandlerbase').replaceWith('eventHandlerPlugin')
             .complete(),
             x=>x.instantiate('eventstore').asFunc().withParameters(options.children || {})
-        .complete());
+                //.instantiate('readstorerepository').asFunc().withParameters(options.children || {})
+                .complete());
     } catch (ex) {
         console.log(ex);
         console.log(ex.stack);

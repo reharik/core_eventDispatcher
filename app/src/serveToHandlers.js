@@ -23,12 +23,13 @@ module.exports = function functions(R, _fantasy, eventmodels,treis) {
 
         //filteredHandlers:: JSON -> [JSON]
         //var filteredHandlers = x=> R.map(R.filter(matchHandler(x)),safeHandlers);
-       var filteredHandlers = x => safeHandlers.bimap(function(y) { throw new Error(y) }, R.filter(matchHandler(x)));
+        var filteredHandlers = x => safeHandlers.bimap(function(y) { throw new Error(y) }, R.filter(matchHandler(x)));
+//        var filteredHandlers = x => safeHandlers.bimap(function(y) { throw new Error(y) }, (y)=> {var f=  R.filter(matchHandler(x)); console.log('fffff');console.log(R.map(f));return f});
 
         //serveEventToHandlers:: JSON -> ()
-        var serveEventToHandlers = x=> filteredHandlers(x).map(R.map(a=> a.handleEvent(x)));
+        var serveEventToHandlers = x=> { console.log(x); var filteredHandlers2 = filteredHandlers(x); console.log(filteredHandlers2); filteredHandlers2.map(R.map(a=> console.log(a))); return filteredHandlers2.map(R.map(a=> a.handleEvent(x)))};
 
-        return {
+         return {
             safeHandlers,
             matchHandler,
             matchName,

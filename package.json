@@ -22,6 +22,7 @@
     "JSON": "^1.0.0",
     "bluebird": "^2.9.27",
     "buffer": "^3.4.3",
+    "appdomain": "git://github.com/reharik/mf_domain.git",
     "corelogger": "git://github.com/reharik/core_logger.git",
     "dagon": "git://github.com/reharik/dagon.git#newVersion",
     "eventhandlerbase": "git://github.com/reharik/core_eventHandlerBase.git#functional",
