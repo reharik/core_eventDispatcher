@@ -27,7 +27,11 @@ module.exports = function functions(R, _fantasy, eventmodels,treis) {
 //        var filteredHandlers = x => safeHandlers.bimap(function(y) { throw new Error(y) }, (y)=> {var f=  R.filter(matchHandler(x)); console.log('fffff');console.log(R.map(f));return f});
 
         //serveEventToHandlers:: JSON -> ()
-        var serveEventToHandlers = x=> { console.log(x); var filteredHandlers2 = filteredHandlers(x); console.log(filteredHandlers2); filteredHandlers2.map(R.map(a=> console.log(a))); return filteredHandlers2.map(R.map(a=> a.handleEvent(x)))};
+
+        //var serveEventToHandlers = x=> R.compose(R.map(a=>a.handleEvent(x)), filteredHandlers(x));
+
+        // first one doesn't work because a=>a.handleEvent(x) is not curried
+        var serveEventToHandlers = x=> filteredHandlers(x).map(R.map(a=> a.handleEvent(x)));
 
          return {
             safeHandlers,

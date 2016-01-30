@@ -110,19 +110,9 @@ describe('gesDispatcher', function() {
         });
     });
 
-    describe('#FILTEREDHANDLERS', function() {
-        context('filteredHandlers called an array with non matching value', function() {
-            it('should return proper values', function() {
-                //console.log(mut.filteredHandlers(eventData));
-                mut.filteredHandlers(eventData).should.eql(Right([testHandler]));
-            });
-        });
-    });
-
     describe('#SERVEEVENTTOHANDLERS', function() {
         context('serveEventToHandlers with an event that it handles', function() {
             it('should call the handler', function() {
-   console.log('xxxxxxxxxx')
                 //console.log(mut.filteredHandlers(bootstrapper));
                 mut.serveEventToHandlers(bootstrapper);
                 //testHandler.getHandledEvents().length.should.equal(1);
