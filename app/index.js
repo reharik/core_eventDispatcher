@@ -13,8 +13,6 @@ module.exports = function(_options) {
         }
     };
     extend(options, _options || {});
-    var container = registry(options);
-    var plugin = container.getInstanceOf('eventDispatcher');
-
-    return plugin(options.eventdispatcher || {});
+    return  registry(options);
+    //return container.getInstanceOf('eventDispatcher');
 };

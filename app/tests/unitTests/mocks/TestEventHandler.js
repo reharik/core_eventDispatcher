@@ -1,29 +1,32 @@
 /**
  * Created by rharik on 6/19/15.
  */
-
-module.exports = function() {
-    return class TestEventHandler {
-        constructor() {
-            this.handlesEvents = ['someEventNotificationOn',
-                'someEventNotificationOff',
-                'someExceptionNotificationOn',
-                'someExceptionNotificationOff',
-                'testingEventNotificationOn',
-                'testingEventNotificationOff'];
-            this.eventsHandled = [];
-            this.eventHandlerName = 'TestEventHandler';
+"use strict";
+module.exports = function(eventhandlerbase,
+                          logger,
+                          appdomain) {
+    return {
+        handlesEvents: ['bootstrapApplication','someEventNotificationOn'],
+        handleEvent  : function(event) {
+            console.log('==========event=========');
+            console.log(event);
+            console.log('==========ENDevent=========');
+            var handler = eventhandlerbase(event, 'BootstrapApplicationWorkflow', this.handlers[event.eventName]);
+            return handler.application(event);
+        },
+        handlers     : {
+            bootstrapApplication(vnt) {
+                console.log('==========bootstrappHandler=========');
+                console.log(vnt);
+                console.log('==========ENDbootstrappHandler=========');
+                return 'success'
+            },
+            someEventNotificationOn(event){
+                console.log('==========someEventNotificationOn=========');
+                console.log(event);
+                console.log('==========ENDsomeEventNotificationOn=========');
+                return success;
+            }
         }
-        handleEvent(vent){
-            this.eventsHandled.push(vent);
-        }
-        clearEventsHandled(){
-            this.eventsHandled = [];
-        }
-        getHandledEvents(){
-            return this.eventsHandled;
-        }
-
-
-    };
+    }
 };

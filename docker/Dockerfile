@@ -1,15 +1,10 @@
-FROM mf/nodebox:latest
+FROM mf_nodebox:latest
 
 MAINTAINER reharik@gmail.com
 
-ENV PLUGIN_HOME /home/opt/app/current
-
-RUN mkdir -p $PLUGIN_HOME
-
 ADD ./package.json ./package.json
+ADD ./config ./config
 
-RUN npm-install-missing
+RUN npm install --silent
 
-WORKDIR $PLUGIN_HOME
-
-ADD . $PLUGIN_HOME
+ADD ./app /$HOME/app
