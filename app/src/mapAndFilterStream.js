@@ -4,10 +4,10 @@
 
 "use strict";
 
-module.exports = function mapAndFilterStream(eventmodels, R,treis) {
+module.exports = function mapAndFilterStream(appfuncs, R,treis) {
     return function(streamType) {
-        var ef = eventmodels.eventFunctions;
-        var fh = eventmodels.functionalHelpers;
+        var ef = appfuncs.eventFunctions;
+        var fh = appfuncs.functionalHelpers;
         var log = function(x){ console.log(x); return x; };
 
         var doesNotStartsWith = R.curry((x,y) => !y.startsWith(x));
