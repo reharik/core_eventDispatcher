@@ -8,11 +8,10 @@ module.exports = function mapAndFilterStream(appfuncs, R,treis) {
     return function(streamType) {
         var ef = appfuncs.eventFunctions;
         var fh = appfuncs.functionalHelpers;
-        var log = function(x){ console.log(x); return x; };
 
         var doesNotStartsWith = R.curry((x,y) => !y.startsWith(x));
         //isNonSystemEvent:: JSON -> Maybe bool
-        var isNonSystemEvent = R.compose(log,R.map(doesNotStartsWith('$')), R.chain(fh.safeProp('EventType')), fh.safeProp('Event'));
+        var isNonSystemEvent = R.compose(R.map(doesNotStartsWith('$')), R.chain(fh.safeProp('EventType')), fh.safeProp('Event'));
         //matchesStreamType:: string -> (JSON -> Maybe bool)
         var matchesStreamType = R.compose(R.map(R.equals(streamType)), R.chain(fh.safeProp('streamType')), ef.parseMetadata);
         //hasData:: JSON -> Maybe bool
@@ -23,7 +22,7 @@ module.exports = function mapAndFilterStream(appfuncs, R,treis) {
             .reduce((a, b) => a && b));
 
         //eventName:: JSON -> Maybe string
-        var eventName = R.compose(R.chain(fh.safeProp('eventName')), ef.parseMetadata);
+        var eventName = R.compose(R.chain(fh.safeProp('EventType')),fh.safeProp('Event'));
         //continuationId:: JSON -> Maybe uuid
         var continuationId = R.compose(R.chain(fh.safeProp('continuationId')), ef.parseMetadata);
         //originalPosition:: JSON -> Maybe JSON
