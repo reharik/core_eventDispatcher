@@ -3,6 +3,7 @@ VERSION=$$(git rev-parse --short HEAD)
 NODE_ENV=qa
 
 clean:
+	rm -rf ./node_modules
 	make install
 
 install:
