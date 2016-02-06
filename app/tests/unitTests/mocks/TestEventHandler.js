@@ -11,13 +11,15 @@ module.exports = function() {
             'someExceptionNotificationOn',
             'someExceptionNotificationOff',
             'testingEventNotificationOn',
-            'testingEventNotificationOff'
+            'testingEventNotificationOff',
+            'bootstrapApplication'
         ];
         var eventsHandled    = [];
         var eventHandlerName = 'TestEventHandler';
 
         var handleEvent        = function(vent) {
             console.log("HHHEEERRREEE")
+            console.log(vent)
             eventsHandled.push(vent);
         };
         var clearEventsHandled = function() {

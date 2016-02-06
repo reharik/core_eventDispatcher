@@ -27,7 +27,7 @@ var _testHandler = container.getInstanceOf('TestEventHandler');
 var _testHandler2 = container.getInstanceOf('TestEventHandler2');
 var testHandler;
 var testHandler2;
-
+var bootstrapEvent;
 
 describe('gesDispatcher', function() {
     before(function() {
@@ -42,6 +42,17 @@ describe('gesDispatcher', function() {
             continuationId  : '6d4f1122-b866-409f-98d8-10fb6451de3c',
             originalPosition: 'the originalPosition',
             data            : {some: 'data'}
+        };
+
+
+    bootstrapEvent = {
+            eventName       : 'bootstrapApplication',
+            originalPosition: 'the originalPosition',
+            data            : {data: 'bootstrap please'},
+            metadata        :{
+                commandTypeName: 'bootstrapApplication',
+                streamType     : 'command'
+            }
         };
 
         handlers =[{
@@ -63,56 +74,56 @@ describe('gesDispatcher', function() {
 
     afterEach(function() {
     });
-
-    describe('#MATCHNAME', function() {
-        context('matchName called on matching name', function() {
-            it('should return true', function() {
-                mut.matchName(eventData)(Maybe.of(['someEventNotificationOn', 'someOtherCrap'])).should.be.true;
-            });
-        });
-
-        context('matchName called on matching name', function() {
-            it('should return true', function() {
-                mut.matchName(eventData)(Maybe.of(['someOtherCrap'])).should.be.false;
-            });
-        });
-    });
-
-    describe('#MATCHHANDLER', function() {
-        context('matchHandler called an array with non matching value', function() {
-            it('should return proper values', function() {
-                mut.matchHandler(eventData)(matchingHandler).should.be.true;
-            });
-        });
-    });
-
-    describe('#FILTEREDHANDLERS', function() {
-        context('filteredHandlers called an array with non matching value', function() {
-            it('should return proper values', function() {
-                //console.log(mut.filteredHandlers(eventData));
-                console.log(mut.filteredHandlers(eventData));
-                mut.filteredHandlers(eventData).should.eql(Right([testHandler]));
-            });
-        });
-    });
-
-    describe('#FILTEREDHANDLERS', function() {
-        context('filteredHandlers called an array with non matching value', function() {
-            it('should return proper values', function() {
-                console.log(mut.filteredHandlers(eventData));
-                mut.filteredHandlers(eventData).should.eql(Right([testHandler]));
-            });
-        });
-    });
-
-    //describe('#SERVEEVENTTOHANDLERS', function() {
-    //    context('serveEventToHandlers with an event that it handles', function() {
-    //        it('should call the handler', async function() {
-    //            console.log(mut.filteredHandlers(eventData));
-    //            await mut.serveEventToHandlers(eventData);
-    //            testHandler.getHandledEvents().length.should.equal(1);
+    //
+    //describe('#MATCHNAME', function() {
+    //    context('matchName called on matching name', function() {
+    //        it('should return true', function() {
+    //            mut.matchName(eventData)(Maybe.of(['someEventNotificationOn', 'someOtherCrap'])).should.be.true;
     //        });
     //    });
+    //
+    //    context('matchName called on matching name', function() {
+    //        it('should return true', function() {
+    //            mut.matchName(eventData)(Maybe.of(['someOtherCrap'])).should.be.false;
+    //        });
+    //    });
+    //});
+    //
+    //describe('#MATCHHANDLER', function() {
+    //    context('matchHandler called an array with non matching value', function() {
+    //        it('should return proper values', function() {
+    //            mut.matchHandler(eventData)(matchingHandler).should.be.true;
+    //        });
+    //    });
+    //});
+    //
+    //describe('#FILTEREDHANDLERS', function() {
+    //    context('filteredHandlers called an array with non matching value', function() {
+    //        it('should return proper values', function() {
+    //            //console.log(mut.filteredHandlers(eventData));
+    //            console.log(mut.filteredHandlers(eventData));
+    //            mut.filteredHandlers(eventData).should.eql(Right([testHandler]));
+    //        });
+    //    });
+    //});
+    //
+    //describe('#FILTEREDHANDLERS', function() {
+    //    context('filteredHandlers called an array with non matching value', function() {
+    //        it('should return proper values', function() {
+    //            console.log(mut.filteredHandlers(eventData));
+    //            mut.filteredHandlers(eventData).should.eql(Right([testHandler]));
+    //        });
+    //    });
+    //});
+
+    describe('#SERVEEVENTTOHANDLERS', function() {
+        context('serveEventToHandlers with an event that it handles', function() {
+            it('should call the handler', function() {
+                console.log(mut.filteredHandlers(eventData));
+                mut.serveEventToHandlers(bootstrapEvent);
+                testHandler.getHandledEvents().length.should.equal(1);
+            });
+        });
 
     //    context('serveEventToHandlers with an event that it does not handle', function() {
     //        it('should NOT call the handler', async function() {
@@ -129,5 +140,5 @@ describe('gesDispatcher', function() {
     //            testHandler.getHandledEvents().length.should.equal(0);
     //        });
     //    });
-    //});
+    });
 });

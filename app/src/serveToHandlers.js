@@ -16,7 +16,7 @@ module.exports = function functions(R, _fantasy, eventmodels,treis) {
         var safeHandlers =  R.or(R.isEmpty(_handlers), R.isNil(_handlers)) ? Left('Dispatcher requires at least one handler') : Right(_handlers);
 
         //matchName:: JSON -> bool
-        var matchName = vent => R.chain(R.any(x=>x==vent.eventName));
+        var matchName = vent => R.chain(log,R.any(x=>x==vent.eventName));
 
         //matchHandler:: JSON -> (JSON -> bool)
         var matchHandler = vent => R.compose(R.map(matchName(vent),fh.safeProp('handlesEvents')));
