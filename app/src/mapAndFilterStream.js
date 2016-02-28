@@ -34,7 +34,8 @@ module.exports = function mapAndFilterStream(appfuncs, R,treis) {
                 eventName       : eventName(payload).getOrElse(),
                 continuationId  : continuationId(payload).getOrElse(),
                 originalPosition: originalPosition(payload).getOrElse(),
-                data            : ef.parseData(payload).getOrElse()
+                data            : ef.parseData(payload).getOrElse(),
+                metadata            : ef.parseMetadata(payload).getOrElse()
             };
         };
 
